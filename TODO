@@ -1,0 +1,30 @@
+Plán algoritmu pro začátek:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Udělat histogram dle středu 
+
+-  Hledáním do šířky najít souvislou plochu (s nastaveným rozptylem,
+   dle předchozího bodu). (Dynamické posouvání střední barvy?) 
+   Sežrat enklávy.
+
+-  Najít okrajové linie. Prok každé dva okrajové body určit
+   spojnici (s vahou dle vzájemné vzdálenosti). "Nejčastější"
+   čtyři spojnice vyberu
+
+-  Určit průsečíky, transformační matici, ztransformovat.
+
+Další vychytávky:
+-----------------
+
+Nakonec by to mělo dělat hezkou presentaci.
+
+Diffy tabulí
+~~~~~~~~~~~~
+
+-  Tlustá souvislá plocha (enkláva) bude přednášející, tato část
+   se do výsledku nezapočte.
+
+-  Ostatní se nějak "vystředuje" (jak, aby to bylo citlivé ke křivkám?).
+
+-  Zvýraznění (například změnou barvy) dopsaného (a smazaného?) textu.
+
