@@ -6,6 +6,8 @@
 #include <QTransform>
 #include <QPixmap>
 #include <QLineF>
+#include <QVector>
+#include <QPolygon>
 
 class GTImage : public QObject
 {
@@ -15,11 +17,27 @@ class GTImage : public QObject
     QPixmap thumbnail;
     QTransform transform;
     QLineF borderLeft, borderRight, borderTop, borderBottom;
+
+    bool checkSrcLoad(); // Načte soubor srcFilename do src, je-li src prázdný. OK=>true.
+    void checkSrcUnload(); // Vyprázdní src, pokud to politika nařizuje
 public:
     explicit GTImage(QObject *parent = 0);
-    static QColor getMedianColor(const QImage &img, const QRect &area);
+    GTImage(const QString &fn, QObject *parent = 0);
+    void setSrcFilename(const QString &fn) {
+        srcFilename = fn;
+    }
+    int srcWidth();
+    int srcHeight();
+
+    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
+
+
+//    static QColor getMedianColor(const QImage &img, const QRect &area);
+
+    QList<QColor> getColorQuantiles (const QRect &area, const QList<qreal> &quantiles);
     
 signals:
+    void srcLoadFailed(GTImage *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())
     
 public slots:
     
