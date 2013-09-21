@@ -65,8 +65,18 @@ QList<QColor> GTImage::getColorQuantiles (const QRect &area, const QList<qreal> 
 }
 
 QPolygon GTImage::findRectangle(int diam, qreal medianThreshold) {
-    checkSrcLoad();
+    if(!checkSrcLoadARGB()) return QPolygon();
 
+    /* Takže plán: začneme od prostředního bodu hledáním do šířky a pak... se uvidí*/
+
+
+}
+
+bool GTImage::checkSrcLoadARGB(){
+    if(!checkSrcLoad()) return false;
+    if(src.format() != QImage::Format_ARGB32)
+        src = src.convertToFormat(QImage::Format_ARGB32);
+    return true;
 }
 
 bool GTImage::checkSrcLoad(){

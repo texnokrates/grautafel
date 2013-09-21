@@ -19,6 +19,7 @@ class GTImage : public QObject
     QLineF borderLeft, borderRight, borderTop, borderBottom;
 
     bool checkSrcLoad(); // Načte soubor srcFilename do src, je-li src prázdný. OK=>true.
+    bool checkSrcLoadARGB(); // Totéž co předchozí s převodem do ARGB32
     void checkSrcUnload(); // Vyprázdní src, pokud to politika nařizuje
 public:
     explicit GTImage(QObject *parent = 0);
