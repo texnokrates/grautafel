@@ -30,7 +30,8 @@ public:
     int srcWidth();
     int srcHeight();
 
-    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
+//    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
+    QPolygon findRectangleSpiral(qreal relativeMedianThreshold);
 
 
 //    static QColor getMedianColor(const QImage &img, const QRect &area);
