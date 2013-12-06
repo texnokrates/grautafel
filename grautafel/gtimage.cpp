@@ -1,4 +1,5 @@
 #include "gtimage.h"
+#include <QtDebug>
 
 GTImage::GTImage(QObject *parent) :
     QObject(parent)
@@ -92,6 +93,7 @@ bool GTImage::checkSrcLoad(){
     // TODO testy na typ chyby, vypuštění chybové hlášky (do logu a na stavový řádek)...
     if(src.isNull()){
         emit srcLoadFailed(this);
+        qWarning() << tr("Could not load image:") << srcFilename;
         return false;
     }
     else return true;
