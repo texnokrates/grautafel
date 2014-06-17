@@ -14,9 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    gtimage.cpp
+    gtimage.cpp \
+    gthoughtransform.C \
+    gtconvolutionkernel.C
 
 HEADERS  += mainwindow.h \
-    gtimage.h
+    gtimage.h \
+    gthoughtransform.h \
+    gtconvolutionkernel.h
 
 FORMS    += mainwindow.ui
