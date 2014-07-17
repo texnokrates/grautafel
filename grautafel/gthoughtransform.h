@@ -14,14 +14,16 @@ class GTHoughTransform : public QObject
   int originalHeight;
   int originalWidth;
   void set(int r, int alpha, double val);
+  void add(int r, int alpha, double val);
 
 public:
   explicit GTHoughTransform(QObject *parent = 0);
   GTHoughTransform(const QImage *src, int angleResolution, QObject *parent = 0);
   ~GTHoughTransform();
-  bool valid() {return validity;}
-  int angleResolution() {return angleRes;}
-  double get(int r, int alpha);
+  bool valid() const {return validity;}
+  int angleResolution(void) {return angleRes;}
+  double get(int r, int alpha) const;
+  QImage visualise(void) const;
 
 
 signals:

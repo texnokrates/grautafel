@@ -13,6 +13,7 @@
 #include <QRect>
 #include <QPalette>
 #include <QVBoxLayout>
+#include <gthoughtransform.h>
 
 void testfun(QMainWindow *where) {
     GTImage img(TESTIMG);
@@ -48,6 +49,16 @@ void testfun(QMainWindow *where) {
     pmap2->convertFromImage(*edgeimg);
     win3->setPixmap(*pmap2);
     win3->show();
+
+
+    GTHoughTransform *ht = new GTHoughTransform(&srcimg, 500);
+    QPixmap *vizmap = new QPixmap;
+    QImage vizimg = ht->visualise();
+    vizimg.save("/tmp/test.png");
+    vizmap->convertFromImage(vizimg);
+    QLabel *win4 = new QLabel;
+    win4->setPixmap(*vizmap);
+    win4->show();
 
 }
 // ================= test ===================
