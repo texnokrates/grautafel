@@ -1,24 +1,28 @@
 #ifndef GTCONVOLUTIONKERNEL_H
 #define GTCONVOLUTIONKERNEL_H
-#include <QIMage>
+#include <QImage>
 #include <QPoint>
 #include <QRect>
 
-// Now we suppose all image data is ARGB32
-class GTConvolutionKernel
+/**
+ * Convolution kernel for QImage.
+ *
+ * The current implementation has the following assumptions:
+ * All image data is ARGB32.
+ * On the other hand, the kernel is grayscale and applies to each RGB symmetrically, using Euclidean metric.
+ */
+struct GTConvolutionKernel
 {
   int xsiz, ysiz;
   int xorig, yorig;
   unsigned char *data;
   int normNumerator, normDenominator; // rozmyslet: nemusí být float?
 //  QImage::format format;
-  GTConvolutionKernel();
-
-public:
-  GTConvolutionKernel(int xSiz, int ySiz, int xOrig, int yOrig, unsigned char *data);
-  int convolve(QImage *img, QPoint point);
-  QImage convolve(QImage *img, QRect area);
+  int convolveSquared(QImage *img, QPoint point); // Outputs *grayscale*; for test purposes only
+//  QImage convolveSquared(QImage *img, QRect area); // Outputs grayscale, too
 
 };
+
+GTConvolutionKernel sobelX, sobelY, prewittX, prewittY, robertsPlus, robertsMinus;
 
 #endif // GTCONVOLUTIONKERNEL_H

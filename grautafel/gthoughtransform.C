@@ -1,25 +1,8 @@
 #include "gthoughtransform.h"
+#include "gtconvolutionkernel.h"
 #include <QImage>
 #include <QtGlobal>
 
-static const int sobelX[3][3] = {{-1, 0, 1},
-                                 {-2, 0, 2},
-                                 {-1, 0, 1}};
-static const int sobelY[3][3] = {{ 1,  2,  1},
-                                 { 0,  0,  0},
-                                 {-1, -2, -1}};
-
-static const int prewittX[3][3] = {{-1, 0, 1},
-                                   {-1, 0, 1},
-                                   {-1, 0, 1}};
-static const int prewittY[3][3] = {{ 1,  1,  1},
-                                   { 0,  0,  0},
-                                   {-1, -1, -1}};
-
-static const int roberts1[2][2] = {{1,  0},
-                                   {0, -1}};
-static const int roberts2[2][2] = {{ 0, 1},
-                                   {-1, 0}};
 
 GTHoughTransform::GTHoughTransform(QObject *parent) :
   QObject(parent)
