@@ -14,11 +14,11 @@ class GTHoughTransform : public QObject
 
 public:
   explicit GTHoughTransform(QObject *parent = 0);
-  GTHoughTransform(QImage *src, int angleResolution, QObject *parent = 0);
+  //GTHoughTransform(QImage *src, int angleResolution, QObject *parent = 0);
   ~GTHoughTransform();
-  bool valid();
-  int angleResolution();
-  int height();
+  bool valid() {return validity;}
+  int angleResolution() {return angleRes;}
+  int height() {return ysiz;}
 
 
 signals:

@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define TESTIMG "/home/mmn/foto/fotky1/DSC_0298.JPG"
+#define TESTIMG "/home/necadam1/repo/grautafel/testy/my_blackboard.jpg"
 
 
 // ================= test ===================
 #include "gtimage.h"
+#include "gtconvolutionkernel.h"
 #include <QColor>
 #include <QLabel>
 #include <QImage>
@@ -33,6 +34,21 @@ void testfun(QMainWindow *where) {
     }
     window->setLayout(layout);
     window->show();
+
+    // Another test
+    QImage srcimg(TESTIMG);
+    QLabel *win2 = new QLabel;
+    QPixmap *pmap = new QPixmap;
+    pmap->convertFromImage(srcimg);
+    win2->setPixmap(*pmap);
+    win2->show();
+    QImage *edgeimg = edgePreview(&srcimg, QRect(3,3,srcimg.width(),srcimg.height()));
+    QLabel *win3 = new QLabel;
+    QPixmap *pmap2 = new QPixmap;
+    pmap2->convertFromImage(*edgeimg);
+    win3->setPixmap(*pmap2);
+    win3->show();
+
 }
 // ================= test ===================
 

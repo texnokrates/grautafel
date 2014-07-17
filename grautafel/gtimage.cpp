@@ -6,8 +6,7 @@ GTImage::GTImage(QObject *parent) :
 {
 }
 
-GTImage::GTImage(const QString &fn, QObject *parent) :
-    GTImage(parent)
+GTImage::GTImage(const QString &fn, QObject *parent)
 {
     setSrcFilename(fn);
 }
