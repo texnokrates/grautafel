@@ -51,6 +51,8 @@ const struct GTConvolutionKernel prewittY = {3, 3, //xsiz, ysiz
                                        1, 6 //nNum, nDen
                                       };
 
+const struct GTConvolutionKernel  * const edgeDetectorX = &sobelX, * const edgeDetectorY = &sobelY;
+
 
 /*!
  * \brief GTConvolutionKernel::convolveSquared
@@ -63,7 +65,7 @@ const struct GTConvolutionKernel prewittY = {3, 3, //xsiz, ysiz
  *
  */
 
-int GTConvolutionKernel::convolveSquaredNotNormalised(QImage *img, QPoint point) const
+int GTConvolutionKernel::convolveSquaredNotNormalised(const QImage *img, QPoint point) const
 {
 //  if (img->format() != QImage::Format_ARGB32)
 //    abort();
@@ -90,19 +92,19 @@ int GTConvolutionKernel::convolveSquaredNotNormalised(QImage *img, QPoint point)
     return totalsum ;// sq(normDenominator) / 9;
 }
 
-int GTConvolutionKernel::convolveSquared(QImage *img, QPoint point, int additionalMultiplier) const
+int GTConvolutionKernel::convolveSquared(const QImage *img, QPoint point, int additionalMultiplier) const
 {
     return sqrt(convolveSquaredNotNormalised(img, point) * sq(additionalMultiplier) / sq(normDenominator) / 9);
 }
 
-double GTConvolutionKernel::dConvolveSquared(QImage *img, QPoint point) const {
+double GTConvolutionKernel::dConvolveSquared(const QImage *img, QPoint point) const {
     return (double) convolveSquaredNotNormalised(img, point)  / (double) sq(normDenominator) / 9.;
 }
 
 
 
 // Slow and ugly version
-QImage *edgePreview(QImage *img, QRect area){ // Outputs grayscale, too
+QImage *edgePreview(const QImage *img, QRect area){ // Outputs grayscale, too
     // QImage supports only indexed 8-bit images, so we make it grayscale
     // by making "linear" index table
     QImage *preview = new QImage(area.size(), QImage::Format_Indexed8);
@@ -113,8 +115,8 @@ QImage *edgePreview(QImage *img, QRect area){ // Outputs grayscale, too
     for (int i = 0; i < area.height(); i++)
         for (int j = 0; j < area.width(); j++) {
             QPoint offset(j,i);
-            int xgrad = sobelX.convolveSquared(img, offset+area.topLeft(),100);
-            int ygrad = sobelY.convolveSquared(img, offset+area.topLeft(),100);
+            int xgrad = edgeDetectorX->convolveSquared(img, offset+area.topLeft(),100);
+            int ygrad = edgeDetectorY->convolveSquared(img, offset+area.topLeft(),100);
             preview->setPixel(offset, (uint) sqrt(xgrad + ygrad)); //FIXME nanormovat
         }
     return preview;

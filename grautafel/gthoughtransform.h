@@ -8,17 +8,20 @@ class GTHoughTransform : public QObject
 {
   Q_OBJECT
   int angleRes;
-  int ysiz;
-  int *data;
+  int radius;
+  double *data;
   bool validity;
+  int originalHeight;
+  int originalWidth;
+  void set(int r, int alpha, double val);
 
 public:
   explicit GTHoughTransform(QObject *parent = 0);
-  //GTHoughTransform(QImage *src, int angleResolution, QObject *parent = 0);
+  GTHoughTransform(const QImage *src, int angleResolution, QObject *parent = 0);
   ~GTHoughTransform();
   bool valid() {return validity;}
   int angleResolution() {return angleRes;}
-  int height() {return ysiz;}
+  double get(int r, int alpha);
 
 
 signals:
