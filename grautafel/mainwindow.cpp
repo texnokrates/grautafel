@@ -123,6 +123,7 @@ public:
     }
 };
 
+#include <QTransform>
 void testfun(QMainWindow *where) {
 #if 0
     GTImage img(TESTIMG);
@@ -182,6 +183,7 @@ void testfun(QMainWindow *where) {
     QObject::connect(hs, SIGNAL(lineClicked(QLineF&)), scene, SLOT(setLine(QLineF&)));
 
     QGraphicsView *hview = new QGraphicsView(hs);
+    hview->setTransform(QTransform::fromScale(2,2));
     hview->show();
 
     QGraphicsView *view = new QGraphicsView(scene);
