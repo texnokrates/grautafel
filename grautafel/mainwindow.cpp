@@ -14,12 +14,32 @@
 #include <QPalette>
 #include <QVBoxLayout>
 #include <gthoughtransform.h>
+#include <QGraphicsScene>
 
 #include <QDir>
 #include <QDebug>
 #include <QTime>
 
+#include <QGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
+class GraphicsScene : public QGraphicsScene
+{
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event){
+       qDebug() << "coords:" << event->scenePos();
+       QList<QGraphicsItem *> its = items();
+       for(QList<QGraphicsItem *>::Iterator i = its.begin(); i != its.end(); i++){
+
+           if ((*i)->type() == QGraphicsLineItem::Type){
+               QGraphicsLineItem *it = qgraphicsitem_cast<QGraphicsLineItem *>(*i);
+               it->setLine(QLineF(it->line().p1(),QPointF(event->scenePos())));
+           }
+       }
+    }
+};
+
 void testfun(QMainWindow *where) {
+#if 0
     GTImage img(TESTIMG);
     QList<QColor> cols =
         img.getColorQuantiles(QRect(img.srcWidth()/3,img.srcHeight()/3,img.srcWidth()/3,img.srcHeight()/3),
@@ -67,6 +87,15 @@ void testfun(QMainWindow *where) {
     win4->show();
 
     qDebug() << QDir::currentPath();
+#endif
+
+    GraphicsScene *scene = new GraphicsScene;
+    QPixmap obr(TESTIMG);
+    scene->addPixmap(obr);
+    QGraphicsRectItem *rect = scene->addRect(QRectF(0, 0, 100, 100));
+    QGraphicsLineItem *line = scene->addLine(QLineF(0,0,200,200));
+    QGraphicsView *view = new QGraphicsView(scene);
+    view->show();
 }
 // ================= test ===================
 
