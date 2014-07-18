@@ -47,9 +47,10 @@ GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, QObje
             double val = edgeDetectorX->dConvolveSquared(src, pos);
             val += edgeDetectorY->dConvolveSquared(src, pos);
             val = sqrt(val);
-            int R = (int) round(sqrt(sq(x-cX)+sq(y-cY))) % radius; //FIXME je modulo nutné
+//            int R = (int) round(sqrt(sq(x-cX)+sq(y-cY))) % radius; //FIXME je modulo nutné
             int Alpha = ((int) round(atan2(y-cY, x-cX) * angleRes / (2 * pi))) % angleRes;
-            for (int alpha = 0; alpha < angleRes; alpha++) {
+            for (int alphaDif = -angleRes / 4; alphaDif < angleRes / 4 ; alphaDif++) {
+                int alpha = (Alpha + alphaDif + angleRes) % angleRes;
                 double a = alpha * 2 * pi / angleRes;
                 int r = (int) round((x-cX)*cos(a) + (y-cY)*sin(a));
                 if (r >= 0)

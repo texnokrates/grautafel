@@ -6,6 +6,10 @@
 
 QT       += core gui
 
+QMAKE_CXXFLAGS += -pg -O2
+QMAKE_LFLAGS += -pg
+
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = grautafel

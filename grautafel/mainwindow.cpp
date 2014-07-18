@@ -15,6 +15,10 @@
 #include <QVBoxLayout>
 #include <gthoughtransform.h>
 
+#include <QDir>
+#include <QDebug>
+#include <QTime>
+
 void testfun(QMainWindow *where) {
     GTImage img(TESTIMG);
     QList<QColor> cols =
@@ -50,8 +54,10 @@ void testfun(QMainWindow *where) {
     win3->setPixmap(*pmap2);
     win3->show();
 
-
+    QTime t;
+    t.start();
     GTHoughTransform *ht = new GTHoughTransform(&srcimg, 500);
+    qDebug("Time elapsed: %d ms", t.elapsed());
     QPixmap *vizmap = new QPixmap;
     QImage vizimg = ht->visualise();
     vizimg.save("/tmp/test.png");
@@ -60,6 +66,7 @@ void testfun(QMainWindow *where) {
     win4->setPixmap(*vizmap);
     win4->show();
 
+    qDebug() << QDir::currentPath();
 }
 // ================= test ===================
 
