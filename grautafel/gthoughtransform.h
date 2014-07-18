@@ -22,6 +22,8 @@ public:
   ~GTHoughTransform();
   bool valid() const {return validity;}
   int angleResolution(void) {return angleRes;}
+  int origHeight(void) {return originalHeight;}
+  int origWidth(void) {return originalWidth;}
   double get(int r, int alpha) const;
   QImage visualise(void) const;
 
