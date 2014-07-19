@@ -28,9 +28,10 @@ double GTHoughTransform::get(int r, int alpha) const {
     return data[r * angleRes + alpha];
 }
 
-GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, QObject *parent) :
+GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, int margin, QObject *parent) :
     QObject(parent)
 {
+    leftMargin = rightMargin = topMargin = bottomMargin = margin;
     originalHeight = src->height();
     originalWidth = src->width();
     radius = (int) sqrt(sq(src->height()) + sq(src->width())) / 2;
@@ -41,8 +42,8 @@ GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, QObje
     int cX = src->width()/2;
     int cY = src->height()/2;
 
-    for (int x = edgeDetectorX->xorig; x < src->width() - (edgeDetectorX->xsiz - edgeDetectorX->xorig); x++)
-        for (int y = edgeDetectorX->yorig; y < src->height() - (edgeDetectorX->ysiz - edgeDetectorX->yorig); y++){
+    for (int x = edgeDetectorX->xorig + leftMargin; x < src->width() - (edgeDetectorX->xsiz - edgeDetectorX->xorig) - rightMargin; x++)
+        for (int y = edgeDetectorX->yorig + topMargin; y < src->height() - (edgeDetectorX->ysiz - edgeDetectorX->yorig)- bottomMargin; y++){
             QPoint pos(x,y);
             double val = edgeDetectorX->dConvolveSquared(src, pos);
             val += edgeDetectorY->dConvolveSquared(src, pos);
@@ -69,7 +70,7 @@ QImage GTHoughTransform::visualise(void) const {
 
     QImage v(angleRes, radius, QImage::Format_Indexed8);
     QVector<QRgb> graytable;
-    for(int i = 0; i < 256; i++) graytable.push_back(qRgb(i,i,i));
+    for(int i = 0; i < 256; i++) graytable.push_back(qRgb(0,i,0));
     v.setColorTable(graytable);
 
     for (int r = 0; r < radius; r++)

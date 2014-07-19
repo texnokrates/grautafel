@@ -7,6 +7,7 @@ class QImage;
 class GTHoughTransform : public QObject
 {
   Q_OBJECT
+  int topMargin, bottomMargin, leftMargin, rightMargin;
   int angleRes;
   int radius;
   double *data;
@@ -18,7 +19,7 @@ class GTHoughTransform : public QObject
 
 public:
   explicit GTHoughTransform(QObject *parent = 0);
-  GTHoughTransform(const QImage *src, int angleResolution, QObject *parent = 0);
+  GTHoughTransform(const QImage *src, int angleResolution, int margin = 2, QObject *parent = 0);
   ~GTHoughTransform();
   bool valid() const {return validity;}
   int angleResolution(void) {return angleRes;}

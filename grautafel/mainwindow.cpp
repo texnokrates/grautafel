@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define TESTIMG "/home/necadam1/repo/grautafel/testy/my_blackboard.jpg"
+#define TESTIMG "/home/mmn/repo/grautafel/testy/maly.png"
 
 
 // ================= test ===================
@@ -116,7 +116,7 @@ protected:
     }
 public:
     HoughGraphicsScene(const QImage &src, int angleResolution, QObject *parent = 0) {
-        ht = new GTHoughTransform(&src, angleResolution, parent);
+        ht = new GTHoughTransform(&src, angleResolution, 2, parent);
         QPixmap pixmap;
         pixmap.convertFromImage(ht->visualise());
         addPixmap(pixmap);
