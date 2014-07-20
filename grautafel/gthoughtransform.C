@@ -4,13 +4,6 @@
 #include <QtGlobal>
 
 
-GTHoughTransform::GTHoughTransform(QObject *parent) :
-    QObject(parent)
-{
-    data = NULL;
-    validity = false;
-}
-
 static const double pi = 3.14159265358979323846;
 
 #include <math.h>
@@ -28,8 +21,11 @@ double GTHoughTransform::get(int r, int alpha) const {
     return data[r * angleRes + alpha];
 }
 
-GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, int margin, QObject *parent) :
-    QObject(parent)
+double GTHoughTransform::get(const coords c) const {
+  return data[c.r + angleRes +c.alpha];
+}
+
+GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, int margin)
 {
     leftMargin = rightMargin = topMargin = bottomMargin = margin;
     originalHeight = src->height();
@@ -57,9 +53,22 @@ GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, int m
                 if (r >= 0)
                     add(r, alpha, val);
             }
-	}
-
+        }
+    coords_by_value_init();
     validity = true;
+}
+
+#include <algorithm>
+
+void GTHoughTransform::coords_by_value_init(void) {
+  coords_by_value.resize(radius * angleRes);
+  for(int r = 0; r < radius; r++)
+    for(int alpha = 0; alpha < angleRes; alpha++){
+      coords_by_value[r * angleRes + alpha].r = r;
+      coords_by_value[r * angleRes + alpha].alpha = alpha;
+      }
+  cmpstruct s(this);
+  std::sort(coords_by_value.begin(), coords_by_value.end(), s);
 }
 
 QImage GTHoughTransform::visualise(void) const {
@@ -89,6 +98,11 @@ QImage GTHoughTransform::visualise(void) const {
 
 
 //}
+
+double *GTHoughTransform::operator[](int r) const{
+  return data + r * angleRes;
+}
+
 
 GTHoughTransform::~GTHoughTransform() {
     delete []data;

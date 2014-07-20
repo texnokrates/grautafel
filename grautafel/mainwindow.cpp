@@ -116,7 +116,7 @@ protected:
     }
 public:
     HoughGraphicsScene(const QImage &src, int angleResolution, QObject *parent = 0) {
-        ht = new GTHoughTransform(&src, angleResolution, 2, parent);
+        ht = new GTHoughTransform(&src, angleResolution, 2);
         QPixmap pixmap;
         pixmap.convertFromImage(ht->visualise());
         addPixmap(pixmap);
