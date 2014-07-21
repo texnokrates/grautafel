@@ -71,9 +71,21 @@ void GTHoughTransform::coords_by_value_init(void) {
   std::sort(coords_by_value.begin(), coords_by_value.end(), s);
 }
 
+/*!
+ * \brief Guesses the board's corners' position
+ *
+ * Goes through the Hought transform from the brightest point.
+ * Searches for the first four brightest points, while ignoring
+ * anything in the +- 20 degrees around the points already found.
+ *
+ * \return
+ */
+std::vector<coords> GTHoughTransform::roughCorners(){
+    std::vector<coords> corners(4);
+    for (int c = 0; c < 4;) {
+        std::vector<coords>::iterator i = coords_by_value.begin();
+    }
 
-std::list<coords> GTHoughTransform::roughCorners(){
-  TODO
 
 }
 
