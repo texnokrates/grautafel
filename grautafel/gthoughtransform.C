@@ -71,6 +71,12 @@ void GTHoughTransform::coords_by_value_init(void) {
   std::sort(coords_by_value.begin(), coords_by_value.end(), s);
 }
 
+
+std::list<coords> GTHoughTransform::roughCorners(){
+  TODO
+
+}
+
 QImage GTHoughTransform::visualise(void) const {
     double max = 0;
     for (int r = 0; r < radius; r++)

@@ -4,6 +4,7 @@
 
 //#include <QObject>
 #include <vector>
+#include <list>
 class QImage;
 
 class GTHoughTransform
@@ -49,6 +50,7 @@ public:
   double get(const coords c) const;
   double *operator[](int r) const;
   QImage visualise(void) const;
+  std::list<coords> roughCorners(void);
 
 
 //signals:
