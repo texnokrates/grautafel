@@ -89,7 +89,7 @@ std::vector<GTHoughTransform::coords> GTHoughTransform::roughCorners(double limi
           goto next;
       corners[c] = *i;
       c++;
-      if (c >= 3) return corners;
+      if (c >= 4) return corners;
       next:
       ;
     }

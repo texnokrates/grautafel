@@ -48,9 +48,10 @@ public:
   int origWidth(void) const {return originalWidth;}
   double get(int r, int alpha) const;
   double get(const coords c) const;
+  int radius(void) const {return radius;}
   double *operator[](int r) const;
   QImage visualise(void) const;
-  std::vector<coords> roughCorners(double limitAngle = 0.26);
+  std::vector<coords> roughCorners(double limitAngle = 0.55);
 
 
 //signals:

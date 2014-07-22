@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-QMAKE_CXXFLAGS += -pg -O2
+QMAKE_CXXFLAGS += -pg
 QMAKE_LFLAGS += -pg
 
 
