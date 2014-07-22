@@ -3,7 +3,6 @@
 #include <QImage>
 #include <QtGlobal>
 
-
 static const double pi = 3.14159265358979323846;
 
 #include <math.h>
@@ -72,8 +71,21 @@ void GTHoughTransform::coords_by_value_init(void) {
 }
 
 
-std::list<coords> GTHoughTransform::roughCorners(){
-  TODO
+std::vector<GTHoughTransform::coords> GTHoughTransform::roughCorners(double limitAngle){
+  int limitAlpha = limitAngle * angleRes / (2 * pi);
+  std::vector<coords> corners(4);
+  int c = 0;
+  for(std::vector<coords>::const_iterator i = coords_by_value.begin(); i != coords_by_value.end(); i++){
+      for(int cc = 0; cc < c; cc++)
+        if (angleRes/2 - abs(angleRes / 2 - abs(i->alpha - corners[cc].alpha))<= limitAlpha)
+          goto next;
+      corners[c] = *i;
+      c++;
+      if (c >= 3) return corners;
+      next:
+      ;
+    }
+  abort(); // Sem jsme se neměli dostat. Příliš velký limitAngle?
 
 }
 
@@ -91,6 +103,7 @@ QImage GTHoughTransform::visualise(void) const {
     for (int r = 0; r < radius; r++)
         for (int alpha = 0; alpha < angleRes; alpha++)
             v.setPixel(alpha, r, get(r,alpha)*255/max);
+    v.save("/tmp/hough.png");
     return v;
 }
 

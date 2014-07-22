@@ -19,11 +19,11 @@ public:
 
 private:
   std::vector<coords> coords_by_value;
-  struct cmpstruct {
+  struct cmpstruct { // Řadíme sestupně
     GTHoughTransform *m;
     cmpstruct(GTHoughTransform *p){m = p;}
     bool operator()(const coords &a, const coords &b) {
-      return m->get(a) < m->get(b);
+      return m->get(a) > m->get(b);
     }
   };
 
@@ -50,7 +50,7 @@ public:
   double get(const coords c) const;
   double *operator[](int r) const;
   QImage visualise(void) const;
-  std::list<coords> roughCorners(void);
+  std::vector<coords> roughCorners(double limitAngle = 0.26);
 
 
 //signals:

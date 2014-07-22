@@ -120,6 +120,9 @@ public:
         QPixmap pixmap;
         pixmap.convertFromImage(ht->visualise());
         addPixmap(pixmap);
+        std::vector<GTHoughTransform::coords> cns = ht->roughCorners();
+        for (int i = 0; i < 4; i++)
+          qDebug() << "Corner " << i << ": (" << cns[i].r << "," << cns[i].alpha << ")" << endl;
     }
 };
 
