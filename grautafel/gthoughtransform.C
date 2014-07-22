@@ -70,7 +70,15 @@ void GTHoughTransform::coords_by_value_init(void) {
   std::sort(coords_by_value.begin(), coords_by_value.end(), s);
 }
 
-
+/*!
+ * \brief Guesses the board's corners' position
+ *
+ * Goes through the Hought transform from the brightest point.
+ * Searches for the first four brightest points, while ignoring
+ * anything in the +- 20 degrees around the points already found.
+ *
+ * \return
+ */
 std::vector<GTHoughTransform::coords> GTHoughTransform::roughCorners(double limitAngle){
   int limitAlpha = limitAngle * angleRes / (2 * pi);
   std::vector<coords> corners(4);
@@ -86,7 +94,6 @@ std::vector<GTHoughTransform::coords> GTHoughTransform::roughCorners(double limi
       ;
     }
   abort(); // Sem jsme se neměli dostat. Příliš velký limitAngle?
-
 }
 
 QImage GTHoughTransform::visualise(void) const {
