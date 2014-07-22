@@ -21,7 +21,7 @@ double GTHoughTransform::get(int r, int alpha) const {
 }
 
 double GTHoughTransform::get(const coords c) const {
-  return data[c.r + angleRes +c.alpha];
+  return data[c.r * angleRes +c.alpha];
 }
 
 GTHoughTransform::GTHoughTransform(const QImage *src, int angleResolution, int margin)

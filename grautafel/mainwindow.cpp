@@ -122,7 +122,7 @@ public:
         addPixmap(pixmap);
         std::vector<GTHoughTransform::coords> cns = ht->roughCorners();
         for (int i = 0; i < 4; i++)
-          qDebug() << "Corner " << i << ": (" << cns[i].r << "," << cns[i].alpha << ")" << endl;
+          qDebug() << "Corner " << i << ": (" << cns[i].alpha << "," << cns[i].r << ")" << endl;
     }
 };
 
@@ -182,7 +182,7 @@ void testfun(QMainWindow *where) {
     QPixmap obr(TESTIMG);
     scene->addPixmap(obr);
 
-    HoughGraphicsScene *hs = new HoughGraphicsScene(QImage(TESTIMG), 600);
+    HoughGraphicsScene *hs = new HoughGraphicsScene(QImage(TESTIMG), 300);
     QObject::connect(hs, SIGNAL(lineClicked(QLineF&)), scene, SLOT(setLine(QLineF&)));
 
     QGraphicsView *hview = new QGraphicsView(hs);
