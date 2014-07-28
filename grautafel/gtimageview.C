@@ -8,12 +8,13 @@
 
 
 GTImageView::GTImageView(QWidget *parent) :
-  QWidget(parent)
+  QGraphicsView(parent)
 {
   sc_ = new QGraphicsScene(this);
-  for (int i = 0; i < 4: i++) {
+  for (int i = 0; i < 4; i++) {
       cornerItems_[i] = new CornerItem;
       sc_->addItem(cornerItems_[i]);
+      cornerItems_[i]->setFlag(QGraphicsItem::ItemIsMovable);
     }
   // Nějaké výchozí počáteční postavení
   cornerItems_[0]->setPos(0,0);
@@ -30,10 +31,23 @@ GTImageView::GTImageView(QWidget *parent) :
       connect(cornerItems_[i], SIGNAL(xChanged()), this, SLOT(updateLines()));
       connect(cornerItems_[i], SIGNAL(yChanged()), this, SLOT(updateLines()));
     }
+
+  setScene(sc_);
 }
 
 void GTImageView::updateLines(void) {
   for (int i = 0; i < 4; i++) {
-      borderItems_[i]->setLine(QLineF(cornerItems_[i]->pos()), QLineF(cornerItems_[(i+1)%4]->pos()));
+      borderItems_[i]->setLine(QLineF(cornerItems_[i]->pos(), cornerItems_[(i+1)%4]->pos()));
     }
+}
+
+void GTImageView::CornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+  painter->drawLine(-radius_, -radius_, radius_, radius_);
+  painter->drawLine(radius_, radius_, -radius_, -radius_);
+  painter->drawRect(boundingRect());
+
+}
+
+QRectF GTImageView::CornerItem::boundingRect(void) const {
+  return QRectF(-2*radius_, -2*radius_, 2*radius_, 2*radius_);
 }

@@ -15,6 +15,7 @@
 #include <QVBoxLayout>
 #include <gthoughtransform.h>
 #include <QGraphicsScene>
+#include <gtimageview.h>
 
 #include <QDir>
 #include <QDebug>
@@ -176,7 +177,6 @@ void testfun(QMainWindow *where) {
     win4->show();
 
     qDebug() << QDir::currentPath();
-#endif
 
     LineGraphicsScene *scene = new LineGraphicsScene;
     QPixmap obr(TESTIMG);
@@ -191,6 +191,9 @@ void testfun(QMainWindow *where) {
 
     QGraphicsView *view = new QGraphicsView(scene);
     view->show();
+#endif
+    GTImageView * iv = new GTImageView();
+    iv->show();
 }
 // ================= test ===================
 
@@ -198,7 +201,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    //testfun(this);
+    testfun(this);
     ui->setupUi(this);
 }
 
