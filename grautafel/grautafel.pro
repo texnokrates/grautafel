@@ -20,11 +20,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     gtimage.cpp \
     gthoughtransform.C \
-    gtconvolutionkernel.C
+    gtconvolutionkernel.C \
+    gtimageview.C
 
 HEADERS  += mainwindow.h \
     gtimage.h \
     gthoughtransform.h \
-    gtconvolutionkernel.h
+    gtconvolutionkernel.h \
+    gtimageview.h
 
 FORMS    += mainwindow.ui

@@ -6,9 +6,9 @@
 #include <QTransform>
 #include <QPixmap>
 #include <QLineF>
+#include <QPointF>
 #include <QVector>
 #include <QPolygon>
-
 
 //! A class holding individual source image (if needed), info and transformation data.
 /*!
@@ -19,17 +19,26 @@
 class GTImage : public QObject
 {
     Q_OBJECT
+public:
+    enum CornersStatus {
+      NotSet = 0x0,
+      SetToSourceCornersAtLoad = 0x1,
+      SetManually = 0x2,
+      GuessedByHoughTransform = 0x4
+    };
+private:
     QString srcFilename, //!< Path to the source photograph.
         destFilename; //!< Path to the transformed photograph.
     QImage src, dest;
     QPixmap thumbnail; //!< Thumbnail to be displayed on the thumbnail area.
-    QTransform transform;
-    QLineF borderLeft, borderRight, borderTop, borderBottom;
+    QTransform transform; // Transforms the original image to the target rectangle
+    QPointF corners_[4]; // Corners are authoritative, not borders
 
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
 public:
+
     explicit GTImage(QObject *parent = 0);
     GTImage(const QString &fn, QObject *parent = 0);
     void setSrcFilename(const QString &fn) {
@@ -37,6 +46,12 @@ public:
     }
     int srcWidth();
     int srcHeight();
+    QVector<QLineF> borders(void) const { // FIXME A co když to ještě není načteno?
+      QVector<QLineF> bs(4);
+      for (int i = 0; i < 4; i++)
+        bs[i] = QLineF(corners_[i],corners_[(i+1)%4]);
+      return bs;
+    }
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
     //! Locates the board using the spiral algorithm.

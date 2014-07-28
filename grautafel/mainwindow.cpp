@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define TESTIMG "/home/mmn/repo/grautafel/testy/maly.png"
+#define TESTIMG "/home/mmn/repo/grautafel/testy/Einstein_blackboard.jpg"
 
 
 // ================= test ===================
@@ -198,7 +198,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    testfun(this);
+    //testfun(this);
     ui->setupUi(this);
 }
 

@@ -18,7 +18,7 @@ public:
   };
 
 private:
-  std::vector<coords> coords_by_value;
+  std::vector<coords> coordsByValue_;
   struct cmpstruct { // Řadíme sestupně
     GTHoughTransform *m;
     cmpstruct(GTHoughTransform *p){m = p;}
@@ -27,28 +27,26 @@ private:
     }
   };
 
-  int topMargin, bottomMargin, leftMargin, rightMargin;
-  int angleRes;
-  int radius;
-  double *data;
-  bool validity; // FIXME smazat
-  int originalHeight;
-  int originalWidth;
+  int topMargin_, bottomMargin_, leftMargin_, rightMargin_;
+  int angleRes_;
+  int radius_;
+  double *data_;
+  int originalHeight_;
+  int originalWidth_;
   void set(int r, int alpha, double val);
   void add(int r, int alpha, double val);
   void coords_by_value_init(void);
 
 public:
-  coords coordsByValue(int n) { return coords_by_value[n]; }
+  coords coordsByValue(int n) { return coordsByValue_[n]; }
   GTHoughTransform(const QImage *src, int angleResolution, int margin = 2);//, QObject *parent = 0);
   ~GTHoughTransform();
-  bool valid() const {return validity;}
-  int angleResolution(void) const {return angleRes;}
-  int origHeight(void) const {return originalHeight;}
-  int origWidth(void) const {return originalWidth;}
+  int angleResolution(void) const {return angleRes_;}
+  int origHeight(void) const {return originalHeight_;}
+  int origWidth(void) const {return originalWidth_;}
   double get(int r, int alpha) const;
   double get(const coords c) const;
-  int radius(void) const {return radius;}
+  int radius(void) const {return radius_;}
   double *operator[](int r) const;
   QImage visualise(void) const;
   std::vector<coords> roughCorners(double limitAngle = 0.55);
