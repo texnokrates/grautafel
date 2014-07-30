@@ -2,7 +2,8 @@
 #include "ui_mainwindow.h"
 
 #define TESTIMG "/home/mmn/repo/grautafel/testy/Einstein_blackboard.jpg"
-
+#define TEST2 "/home/mmn/repo/grautafel/testy/my_blackboard.jpg"
+#define TEST3 "/home/mmn/repo/grautafel/testy/whiteboard_2.jpg"
 
 // ================= test ===================
 #include "gtimage.h"
@@ -195,8 +196,9 @@ void testfun(QMainWindow *where) {
 #endif
     GTImageView * iv = new GTImageView();
     iv->show();
-    GTImageItem *it  = new GTImageItem(TESTIMG);
-    it->show();
+    GTImageListWidget *iw = new GTImageListWidget;
+    iw->show();
+    iw->addItems(QList<QString>() << TESTIMG << TEST2 << TEST3);
 
 }
 // ================= test ===================

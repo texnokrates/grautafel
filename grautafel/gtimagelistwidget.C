@@ -37,12 +37,41 @@ void GTImageItem::drawUnselected()
   setFrameStyle(QFrame::Panel | QFrame::Raised);
 }
 
-
+void GTImageItem::unselect(){
+  drawUnselected();
+}
 
 GTImageListWidget::GTImageListWidget(QWidget *parent) :
   QWidget(parent)
 {
-
-
-
+  layout = new QVBoxLayout;
+  setLayout(layout);
+  selected = 0;
 }
+
+bool GTImageListWidget::addItem(const QString & filename){
+  GTImageItem *item = new GTImageItem(filename);
+  // FIXME co když se nahrání nezdaří?
+
+  items.append(item);
+  layout->addWidget(item);
+
+  QObject::connect(item, SIGNAL(requestSelection(GTImageItem*)), this, SLOT(selectImage(GTImageItem*)));
+  return true;
+}
+
+bool GTImageListWidget::addItems(const QList<QString> &filenames){
+  bool ok = true;
+  for(QList<QString>::ConstIterator i = filenames.constBegin(); i != filenames.constEnd(); i++)
+    if(!addItem(*i)) ok = false;
+  return ok;
+}
+
+void GTImageListWidget::selectImage(GTImageItem *item) {
+  // TODO ověřit, že je obsažen
+  if(selected == item) return;
+  if(selected) selected->unselect();
+  selected = item;
+  emit selectedImage(selected->image());
+}
+

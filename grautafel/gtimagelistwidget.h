@@ -26,6 +26,7 @@ signals:
   void destroyMe(GTImageItem *myself);
 
 public slots:
+  void unselect(void); // (potřebuji to jako slot?)
 protected:
   void focusInEvent(QFocusEvent *);
 };
@@ -34,9 +35,12 @@ class GTImageListWidget : public QWidget
 {
   Q_OBJECT
   QVBoxLayout * layout;
-  QList <GTImageItem *> items;
+  QList <GTImageItem *> items; // Nutné kvůli mazání a přehazování
+  GTImageItem *selected;
 public:
   bool deleteItem(GTImageItem *it);
+  bool addItem(const QString & filename);
+  bool addItems(const QList <QString> & filenames);
 
 
 
@@ -44,9 +48,10 @@ public:
   explicit GTImageListWidget(QWidget *parent = 0);
 
 signals:
-  void imageSelected(GTImage *);
+  void selectedImage(GTImage *);
 
 public slots:
+  void selectImage(GTImageItem *);
 
 };
 
