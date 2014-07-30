@@ -20,6 +20,8 @@ class GTImage : public QObject
 {
     Q_OBJECT
 public:
+  static const int ThumbnailWidth = 128;
+  static const int ThumbnailHeight = 96;
     enum CornersStatus {
       NotSet = 0x0,
       SetToSourceCornersAtLoad = 0x1,
@@ -27,13 +29,14 @@ public:
       GuessedByHoughTransform = 0x4
     };
 private:
-    QString srcFilename, //!< Path to the source photograph.
-        destFilename; //!< Path to the transformed photograph.
-    QImage src, dest;
-    QPixmap thumbnail; //!< Thumbnail to be displayed on the thumbnail area.
-    QTransform transform; // Transforms the original image to the target rectangle
-    QPointF corners_[4]; // Corners are authoritative, not borders
+    QString srcFilename_, //!< Path to the source photograph.
+        destFilename_; //!< Path to the transformed photograph.
+    QImage src_, dest_;
+    QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
+    QTransform transform_; // Transforms the original image to the target rectangle
+    QPointF corners_[4]; // Corners are authoritative, not borders or transform
 
+    void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
@@ -42,8 +45,9 @@ public:
     explicit GTImage(QObject *parent = 0);
     GTImage(const QString &fn, QObject *parent = 0);
     void setSrcFilename(const QString &fn) {
-        srcFilename = fn;
+        srcFilename_ = fn;
     }
+    QPixmap thumbnail(void);
     int srcWidth();
     int srcHeight();
     QVector<QLineF> borders(void) const { // FIXME A co když to ještě není načteno?
@@ -69,7 +73,7 @@ public:
     
 signals:
     void srcLoadFailed(GTImage *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())
-    
+    void changed(GTImage *);
 public slots:
     
 };

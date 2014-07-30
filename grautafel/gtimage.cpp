@@ -13,12 +13,12 @@ GTImage::GTImage(const QString &fn, QObject *parent)
 
 int GTImage::srcWidth() {
     checkSrcLoad();
-    return src.width();
+    return src_.width();
 }
 
 int GTImage::srcHeight() {
     checkSrcLoad();
-    return src.height();
+    return src_.height();
 }
 
 #if 0
@@ -48,7 +48,7 @@ QList<QColor> GTImage::getColorQuantiles (const QRect &area, const QList<qreal> 
     QVector<int> r(len), g(len), b(len);
     for(int i = 0; i < area.height(); i++) {
         for(int j = 0; j < area.width(); j++){
-            QRgb px = src.pixel(area.bottomLeft() + QPoint(j,i));
+            QRgb px = src_.pixel(area.bottomLeft() + QPoint(j,i));
             r[i*area.width()+j] = qRed(px);
             g[i*area.width()+j] = qGreen(px);
             b[i*area.width()+j] = qBlue(px);
@@ -79,26 +79,37 @@ QPolygon GTImage::findRectangleSpiral(qreal relativeMedianThreshold){
 
 }
 
+void GTImage::makeThumbnail() {
+  checkSrcLoad();
+  QImage thumbnailImage = src_.scaled(ThumbnailWidth, ThumbnailHeight, Qt::KeepAspectRatio);
+  thumbnail_ = QPixmap::fromImage(thumbnailImage);
+}
+
+QPixmap GTImage::thumbnail(){
+  if(thumbnail_.isNull()) makeThumbnail();
+  return thumbnail_;
+}
+
 bool GTImage::checkSrcLoadARGB(){
     if(!checkSrcLoad()) return false;
-    if(src.format() != QImage::Format_ARGB32)
-        src = src.convertToFormat(QImage::Format_ARGB32);
+    if(src_.format() != QImage::Format_ARGB32)
+        src_ = src_.convertToFormat(QImage::Format_ARGB32);
     return true;
 }
 
 bool GTImage::checkSrcLoad(){
-    if(src.format() == QImage::Format_Invalid)
-        src = QImage(srcFilename);
+    if(src_.format() == QImage::Format_Invalid)
+        src_ = QImage(srcFilename_);
     // TODO testy na typ chyby, vypuštění chybové hlášky (do logu a na stavový řádek)...
-    if(src.isNull()){
+    if(src_.isNull()){
         emit srcLoadFailed(this);
-        qWarning() << tr("Could not load image:") << srcFilename;
+        qWarning() << tr("Could not load image:") << srcFilename_;
         return false;
     }
-    else return true;
+    return true;
 }
 
 void GTImage::checkSrcUnload(){
-    if(!src.isNull() && true /* TODO zde podmínka dle politiky */ )
-        src = QImage();
+    if(!src_.isNull() && true /* TODO zde podmínka dle politiky */ )
+        src_ = QImage();
 }

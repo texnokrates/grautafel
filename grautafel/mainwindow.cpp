@@ -16,6 +16,7 @@
 #include <gthoughtransform.h>
 #include <QGraphicsScene>
 #include <gtimageview.h>
+#include <gtimagelistwidget.h>
 
 #include <QDir>
 #include <QDebug>
@@ -194,6 +195,9 @@ void testfun(QMainWindow *where) {
 #endif
     GTImageView * iv = new GTImageView();
     iv->show();
+    GTImageItem *it  = new GTImageItem(TESTIMG);
+    it->show();
+
 }
 // ================= test ===================
 
