@@ -32,6 +32,8 @@ public:
   QVector<QPointF> corners(void) const;
   bool setCorners(const QVector<QPointF> &);
   QRectF cornersBoundingRect(void) const;
+  void setZoom(qreal factor);
+  qreal zoom(void) const;
 
 
 signals:

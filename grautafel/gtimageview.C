@@ -5,7 +5,7 @@
 #include <QLineF>
 #include <QPointF>
 #include <QPen>
-
+#include <cmath>
 
 
 GTImageView::GTImageView(QWidget *parent) :
@@ -17,6 +17,7 @@ GTImageView::GTImageView(QWidget *parent) :
       cornerItems_[i] = new CornerItem;
       sc_->addItem(cornerItems_[i]);
       cornerItems_[i]->setFlag(QGraphicsItem::ItemIsMovable);
+      cornerItems_[i]->setZValue(3);
     }
   // Nějaké výchozí počáteční postavení
   cornerItems_[0]->setPos(0,0);
@@ -62,8 +63,19 @@ void GTImageView::setImage(GTImage *newimg) {
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
   emit cornersChanged();
   QRectF cbrect = cornersBoundingRect();
-  setTransform(QTransform::fromScale(width() / cbrect.width(), width()/cbrect.width()));
+  setZoom(width()/cbrect.width());
   ensureVisible(transform().mapRect(cornersBoundingRect()),0,0);
+}
+
+void GTImageView::setZoom(qreal factor){
+  setTransform(QTransform::fromScale(factor, factor));
+  for(int i = 0; i < 4; i++) {
+      cornerItems_[i]->setScale(1./factor);
+    }
+}
+
+qreal GTImageView::zoom(void) const {
+  return std::sqrt(transform().det());
 }
 
 QVector<QPointF> GTImageView::corners(void) const {
