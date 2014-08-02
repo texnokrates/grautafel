@@ -31,6 +31,8 @@ public:
   explicit GTImageView(QWidget *parent = 0);
   QVector<QPointF> corners(void) const;
   bool setCorners(const QVector<QPointF> &);
+  QRectF cornersBoundingRect(void) const;
+
 
 signals:
   // TODO dodělat signály pro stavový řádek

@@ -60,8 +60,10 @@ void GTImageView::setImage(GTImage *newimg) {
   setCorners(newimg->corners());
 
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
-
   emit cornersChanged();
+  QRectF cbrect = cornersBoundingRect();
+  setTransform(QTransform::fromScale(width() / cbrect.width(), width()/cbrect.width()));
+  ensureVisible(transform().mapRect(cornersBoundingRect()),0,0);
 }
 
 QVector<QPointF> GTImageView::corners(void) const {
@@ -76,6 +78,18 @@ void GTImageView::saveChanges() {
   if(img_) {
       img_->setCorners(corners());
     }
+}
+
+QRectF GTImageView::cornersBoundingRect() const {
+  qreal minX = cornerItems_[0]->x(), maxX = cornerItems_[0]->x();
+  qreal minY = cornerItems_[0]->y(), maxY =  cornerItems_[0]->y();
+  for(int i = 1; i < 4; i++){
+      minX = qMin(minX, cornerItems_[i]->x());
+      maxX = qMax(maxX, cornerItems_[i]->x());
+      minY = qMin(minY, cornerItems_[i]->y());
+      maxY = qMax(maxX, cornerItems_[i]->y());
+    }
+  return QRectF(minX, minY, maxX-minX, maxY-minY);
 }
 
 void GTImageView::updateLines(void) {
