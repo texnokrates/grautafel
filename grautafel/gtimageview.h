@@ -5,6 +5,8 @@ class GTImage;
 class QGraphicsScene;
 #include <QGraphicsView>
 #include <QGraphicsObject>
+#include <QVector>
+#include <QPointF>
 
 class GTImageView : public QGraphicsView
 {
@@ -17,24 +19,28 @@ class GTImageView : public QGraphicsView
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect(void) const;
   };
-
+private:
   CornerItem *cornerItems_[4];
   QGraphicsLineItem *borderItems_[4];
   GTImage *img_;
+  QGraphicsPixmapItem *pixmapItem_;
   QGraphicsScene *sc_;
 
+  void saveChanges(void); // uloží změny před přepnutím na další obrázek
 public:
   explicit GTImageView(QWidget *parent = 0);
+  QVector<QPointF> corners(void) const;
+  bool setCorners(const QVector<QPointF> &);
 
 signals:
-  // Todo dodělat signály pro stavový řádek
+  // TODO dodělat signály pro stavový řádek
   void cornersChanged(void);
 
 public slots:
+  void setImage(GTImage *); // uloží změny a načte nový obrázek
   void updateLines(void); // Přepočte polohy hranic
 #if 0 // Doimplementovat
-  bool setImage(GTImage *); // uloží změny a načte nový obrázek
-  void reset(void); // zruší změny na současném obrázku (načte hodnoty znova z něj)
+ void reset(void); // zruší změny na současném obrázku (načte hodnoty znova z něj)
 
   void setTopLeftCorner(QPointF);
   void setTopRightCorner(QPointF);

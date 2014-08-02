@@ -28,15 +28,23 @@ public:
       SetManually = 0x2,
       GuessedByHoughTransform = 0x4
     };
+//    enum ThumbnailType {
+//      Fast = 0x1;
+//      Full = 0x2;
+//    };
+
 private:
+    bool isOk_;
+    CornersStatus cstat_;
     QString srcFilename_, //!< Path to the source photograph.
         destFilename_; //!< Path to the transformed photograph.
     QImage src_, dest_;
     QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
     QTransform transform_; // Transforms the original image to the target rectangle
-    QPointF corners_[4]; // Corners are authoritative, not borders or transform
+    QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
 
-    void makeThumbnail();
+    QSize size_;
+    //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
@@ -48,6 +56,9 @@ public:
         srcFilename_ = fn;
     }
     QPixmap thumbnail(void);
+    QVector<QPointF> corners(void);
+    bool setCorners(const QVector<QPointF> &corners);
+    QImage srcImage(void);
     int srcWidth();
     int srcHeight();
     QVector<QLineF> borders(void) const { // FIXME A co když to ještě není načteno?

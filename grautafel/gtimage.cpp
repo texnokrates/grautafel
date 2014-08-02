@@ -1,14 +1,31 @@
 #include "gtimage.h"
 #include <QtDebug>
+#include <QImageReader>
+#include <QSize>
 
-GTImage::GTImage(QObject *parent) :
-    QObject(parent)
-{
-}
 
 GTImage::GTImage(const QString &fn, QObject *parent)
 {
+    isOk_ = true;
     setSrcFilename(fn);
+    QImageReader reader(fn);
+    if (!reader.canRead()) {
+        isOk_ = false;
+        return;
+      }
+    size_ = reader.size();
+    reader.setScaledSize(size_.scaled(ThumbnailWidth, ThumbnailHeight, Qt::KeepAspectRatio));
+    if(!thumbnail_.convertFromImage(reader.read())){
+        isOk_ = false;
+        return;
+      }
+    corners_ = QVector<QPointF>(4);
+    corners_[0] = QPointF(0,0);
+    corners_[1] = QPointF(size_.width(), 0);
+    corners_[2] = QPointF(size_.width(), size_.height());
+    corners_[3] = QPointF(0, size_.height());
+    cstat_ = SetToSourceCornersAtLoad;
+
 }
 
 int GTImage::srcWidth() {
@@ -79,14 +96,13 @@ QPolygon GTImage::findRectangleSpiral(qreal relativeMedianThreshold){
 
 }
 
-void GTImage::makeThumbnail() {
-  checkSrcLoad();
-  QImage thumbnailImage = src_.scaled(ThumbnailWidth, ThumbnailHeight, Qt::KeepAspectRatio);
-  thumbnail_ = QPixmap::fromImage(thumbnailImage);
-}
+//void GTImage::makeThumbnail() {
+//  checkSrcLoad();
+//  QImage thumbnailImage = src_.scaled(ThumbnailWidth, ThumbnailHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//  thumbnail_ = QPixmap::fromImage(thumbnailImage);
+//}
 
 QPixmap GTImage::thumbnail(){
-  if(thumbnail_.isNull()) makeThumbnail();
   return thumbnail_;
 }
 
@@ -109,7 +125,32 @@ bool GTImage::checkSrcLoad(){
     return true;
 }
 
+QVector<QPointF> GTImage::corners(){
+  if(cstat_ != NotSet) return corners_;
+  else {
+      corners_[0] = QPointF(0,0);
+      corners_[1] = QPointF(srcWidth(), 0);
+      corners_[2] = QPointF(srcWidth(), srcHeight());
+      corners_[3] = QPointF(0, srcHeight());
+      cstat_ = SetToSourceCornersAtLoad;
+      return corners_;
+    }
+}
+
+bool GTImage::setCorners(const QVector<QPointF> &crs){
+  corners_ = crs;
+  return true; //TODO kontrola validity argumentu
+}
+
 void GTImage::checkSrcUnload(){
     if(!src_.isNull() && true /* TODO zde podmínka dle politiky */ )
         src_ = QImage();
+}
+
+QImage GTImage::srcImage(){
+  QImage src;
+  checkSrcLoad();
+  src = src_;
+  checkSrcUnload();
+  return src;
 }

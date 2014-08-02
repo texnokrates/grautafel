@@ -11,6 +11,7 @@
 GTImageView::GTImageView(QWidget *parent) :
   QGraphicsView(parent)
 {
+  img_ = 0;
   sc_ = new QGraphicsScene(this);
   for (int i = 0; i < 4; i++) {
       cornerItems_[i] = new CornerItem;
@@ -22,6 +23,8 @@ GTImageView::GTImageView(QWidget *parent) :
   cornerItems_[1]->setPos(640, 0);
   cornerItems_[2]->setPos(640,480);
   cornerItems_[3]->setPos(0,480);
+
+  pixmapItem_ = sc_->addPixmap(QPixmap()); //TODO dát sem nějakou tapetu
 
   QPen pen;
   pen.setColor(Qt::cyan);
@@ -39,6 +42,40 @@ GTImageView::GTImageView(QWidget *parent) :
     }
 
   setScene(sc_);
+}
+
+bool GTImageView::setCorners(const QVector<QPointF> &corners){
+  for(int i = 0; i < 4; i++){
+      cornerItems_[i]->setX(corners[i].x());
+      cornerItems_[i]->setY(corners[i].y());
+    }
+  return true;
+}
+
+void GTImageView::setImage(GTImage *newimg) {
+  if (img_ == newimg) return;
+  saveChanges();
+
+  img_ = newimg;
+  setCorners(newimg->corners());
+
+  pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
+
+  emit cornersChanged();
+}
+
+QVector<QPointF> GTImageView::corners(void) const {
+  QVector<QPointF> c(4);
+  for(int i = 0; i < 4; i++){
+      c[i] = cornerItems_[i]->pos();
+    }
+  return c;
+}
+
+void GTImageView::saveChanges() {
+  if(img_) {
+      img_->setCorners(corners());
+    }
 }
 
 void GTImageView::updateLines(void) {

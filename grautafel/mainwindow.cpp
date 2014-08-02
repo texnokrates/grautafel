@@ -199,7 +199,8 @@ void testfun(QMainWindow *where) {
     GTImageListWidget *iw = new GTImageListWidget;
     iw->show();
     iw->addItems(QList<QString>() << TESTIMG << TEST2 << TEST3);
-
+    QObject::connect(iw, SIGNAL(selectedImage(GTImage*)),
+                     iv, SLOT(setImage(GTImage*)));
 }
 // ================= test ===================
 
