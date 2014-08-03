@@ -14,7 +14,7 @@ GTImageView::GTImageView(QWidget *parent) :
   img_ = 0;
   sc_ = new QGraphicsScene(this);
   for (int i = 0; i < 4; i++) {
-      cornerItems_[i] = new CornerItem;
+      cornerItems_[i] = new GTCornerItem;
       sc_->addItem(cornerItems_[i]);
       cornerItems_[i]->setFlag(QGraphicsItem::ItemIsMovable);
       cornerItems_[i]->setZValue(3);
@@ -40,6 +40,8 @@ GTImageView::GTImageView(QWidget *parent) :
   for (int i = 0; i < 4; i++) {
       connect(cornerItems_[i], SIGNAL(xChanged()), this, SLOT(updateLines()));
       connect(cornerItems_[i], SIGNAL(yChanged()), this, SLOT(updateLines()));
+      connect(cornerItems_[i], SIGNAL(requestBoundingRectUpdate()),
+              this, SLOT(updateSceneRect(void)));
     }
 
   setScene(sc_);
@@ -63,8 +65,9 @@ void GTImageView::setImage(GTImage *newimg) {
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
   emit cornersChanged();
   QRectF cbrect = cornersBoundingRect();
-  setZoom(width()/cbrect.width());
-  ensureVisible(transform().mapRect(cornersBoundingRect()),0,0);
+  updateSceneRect();
+  setZoom(qMin(1.,width()/cbrect.width()));
+  ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
 }
 
 void GTImageView::setZoom(qreal factor){
@@ -72,6 +75,10 @@ void GTImageView::setZoom(qreal factor){
   for(int i = 0; i < 4; i++) {
       cornerItems_[i]->setScale(1./factor);
     }
+}
+
+void GTImageView::updateSceneRect(){
+  setSceneRect(cornersBoundingRect().adjusted(-15,-15,30,30));
 }
 
 qreal GTImageView::zoom(void) const {
@@ -93,13 +100,13 @@ void GTImageView::saveChanges() {
 }
 
 QRectF GTImageView::cornersBoundingRect() const {
-  qreal minX = cornerItems_[0]->x(), maxX = cornerItems_[0]->x();
-  qreal minY = cornerItems_[0]->y(), maxY =  cornerItems_[0]->y();
-  for(int i = 1; i < 4; i++){
+  qreal minX = 0, maxX = img_->srcImage().width();
+  qreal minY = 0, maxY = img_->srcImage().height();
+  for(int i = 0; i < 4; i++){
       minX = qMin(minX, cornerItems_[i]->x());
       maxX = qMax(maxX, cornerItems_[i]->x());
       minY = qMin(minY, cornerItems_[i]->y());
-      maxY = qMax(maxX, cornerItems_[i]->y());
+      maxY = qMax(maxY, cornerItems_[i]->y());
     }
   return QRectF(minX, minY, maxX-minX, maxY-minY);
 }
@@ -110,7 +117,7 @@ void GTImageView::updateLines(void) {
     }
 }
 
-void GTImageView::CornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void GTCornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
   QPen pen;
   pen.setColor(Qt::red);
   painter->setPen(pen);
@@ -121,6 +128,11 @@ void GTImageView::CornerItem::paint(QPainter *painter, const QStyleOptionGraphic
 
 }
 
-QRectF GTImageView::CornerItem::boundingRect(void) const {
+QRectF GTCornerItem::boundingRect(void) const {
   return QRectF(-1*radius_, -1*radius_, 2*radius_, 2*radius_);
+}
+
+void GTCornerItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+  QGraphicsObject::mouseReleaseEvent(event);
+  emit requestBoundingRectUpdate();
 }

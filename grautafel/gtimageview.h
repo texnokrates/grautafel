@@ -8,19 +8,24 @@ class QGraphicsScene;
 #include <QVector>
 #include <QPointF>
 
+class GTCornerItem : public QGraphicsObject{
+    Q_OBJECT // Je to třeba?
+    static const int radius_ = 5;
+  public:
+    explicit GTCornerItem(QGraphicsItem *parent = 0) : QGraphicsObject(parent){}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    QRectF boundingRect(void) const;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
+  signals:
+    void requestBoundingRectUpdate();
+};
+
 class GTImageView : public QGraphicsView
 {
   Q_OBJECT
-  class CornerItem : public QGraphicsObject{
-  //  Q_OBJECT // Je to třeba?
-    static const int radius_ = 5;
-  public:
-    explicit CornerItem(QGraphicsItem *parent = 0) : QGraphicsObject(parent){}
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    QRectF boundingRect(void) const;
-  };
+
 private:
-  CornerItem *cornerItems_[4];
+  GTCornerItem *cornerItems_[4];
   QGraphicsLineItem *borderItems_[4];
   GTImage *img_;
   QGraphicsPixmapItem *pixmapItem_;
@@ -41,6 +46,7 @@ signals:
   void cornersChanged(void);
 
 public slots:
+  void updateSceneRect(void);
   void setImage(GTImage *); // uloží změny a načte nový obrázek
   void updateLines(void); // Přepočte polohy hranic
 #if 0 // Doimplementovat
