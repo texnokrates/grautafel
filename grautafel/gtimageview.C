@@ -100,6 +100,7 @@ void GTImageView::saveChanges() {
 }
 
 QRectF GTImageView::cornersBoundingRect() const {
+  if (!img_) return QRectF(0,0,640,480);
   qreal minX = 0, maxX = img_->srcImage().width();
   qreal minY = 0, maxY = img_->srcImage().height();
   for(int i = 0; i < 4; i++){

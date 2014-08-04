@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-
+//#include "ui_mainwindow.h"
+#include "gtmainwidget.h"
 #define TESTIMG "/home/mmn/repo/grautafel/testy/Einstein_blackboard.jpg"
 #define TEST2 "/home/mmn/repo/grautafel/testy/my_blackboard.jpg"
 #define TEST3 "/home/mmn/repo/grautafel/testy/whiteboard_2.jpg"
@@ -194,6 +194,7 @@ void testfun(QMainWindow *where) {
     QGraphicsView *view = new QGraphicsView(scene);
     view->show();
 #endif
+
     GTImageView * iv = new GTImageView();
     iv->show();
     GTImageListWidget *iw = new GTImageListWidget;
@@ -205,16 +206,18 @@ void testfun(QMainWindow *where) {
 // ================= test ===================
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)//,
+//    ui(new Ui::MainWindow)
 {
-    testfun(this);
-    ui->setupUi(this);
+//    testfun(this);
+//    ui->setupUi(this);
+  setCentralWidget(new GTMainWidget());
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+//    delete ui;
 }
 
 #include "mainwindow.moc"
