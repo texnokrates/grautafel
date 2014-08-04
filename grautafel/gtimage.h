@@ -61,6 +61,7 @@ public:
     QImage srcImage(void);
     int srcWidth();
     int srcHeight();
+    bool isOk(void) const;
     QVector<QLineF> borders(void) const { // FIXME A co když to ještě není načteno?
       QVector<QLineF> bs(4);
       for (int i = 0; i < 4; i++)

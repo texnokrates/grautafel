@@ -1,5 +1,6 @@
 #include "gtimagelistwidget.h"
 #include <QDebug>
+#include <QFileDialog>
 
 GTImageItem::GTImageItem(const QString &srcname, QWidget *parent) :
   QFrame(parent)
@@ -47,11 +48,21 @@ GTImageListWidget::GTImageListWidget(QWidget *parent) :
   layout = new QVBoxLayout;
   setLayout(layout);
   selected = 0;
+  openAction = new QAction(trUtf8("&Open"), this);
+  moveUpAction = new QAction(trUtf8("Move &up"), this);
+  moveDownAction = new QAction(trUtf8("Move &down"), this);
+  deleteAction = new QAction(trUtf8("D&elete"), this);
+
+  connect(openAction, SIGNAL(triggered()),
+          this, SLOT(startOpenDialog()));
 }
 
 bool GTImageListWidget::addItem(const QString & filename){
   GTImageItem *item = new GTImageItem(filename);
-  // FIXME co když se nahrání nezdaří?
+  if(!item->image()->isOk()){
+      delete item;
+      return false;
+    }
 
   items.append(item);
   layout->addWidget(item);
@@ -60,11 +71,17 @@ bool GTImageListWidget::addItem(const QString & filename){
   return true;
 }
 
-bool GTImageListWidget::addItems(const QList<QString> &filenames){
+bool GTImageListWidget::addItems(const QStringList &filenames){
   bool ok = true;
   for(QList<QString>::ConstIterator i = filenames.constBegin(); i != filenames.constEnd(); i++)
     if(!addItem(*i)) ok = false;
   return ok;
+}
+
+void GTImageListWidget::startOpenDialog() {
+  QStringList filesToOpen = QFileDialog::getOpenFileNames(this, trUtf8("Open images"));
+  if (filesToOpen.isEmpty()) return;
+  addItems(filesToOpen);
 }
 
 void GTImageListWidget::selectImage(GTImageItem *item) {

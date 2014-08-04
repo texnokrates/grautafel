@@ -137,6 +137,10 @@ QVector<QPointF> GTImage::corners(){
     }
 }
 
+bool GTImage::isOk(void) const {
+  return isOk_;
+}
+
 bool GTImage::setCorners(const QVector<QPointF> &crs){
   corners_ = crs;
   return true; //TODO kontrola validity argumentu

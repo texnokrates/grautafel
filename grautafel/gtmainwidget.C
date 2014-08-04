@@ -7,11 +7,15 @@
 GTMainWidget::GTMainWidget(QWidget *parent) :
   QWidget(parent)
 {
+
+  // Todo číst texty tlačítek z akcí
   QPushButton *upButton = new QPushButton(trUtf8("Move up"));
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
+  QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QCheckBox *toggleTransformBox = new QCheckBox(trUtf8("Preview"));
 
   QVBoxLayout *bwl = new QVBoxLayout;
+  bwl->addWidget(openButton);
   bwl->addWidget(upButton);
   bwl->addWidget(downButton);
   bwl->addWidget(toggleTransformBox);
@@ -22,7 +26,9 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   view = new GTImageView;
   QObject::connect(listWidget, SIGNAL(selectedImage(GTImage*)),
                    view, SLOT(setImage(GTImage*)));
-  // TODO naconnectit tlačítka
+  QObject::connect(openButton, SIGNAL(clicked()),
+                   listWidget->openAction, SLOT(trigger()));
+  // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;
   layout->addWidget(view);

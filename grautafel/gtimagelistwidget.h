@@ -6,6 +6,7 @@
 #include <QList>
 #include <gtimage.h>
 #include <QLabel>
+#include <QAction>
 
 class GTImageItem : public QFrame {
   Q_OBJECT
@@ -40,7 +41,12 @@ class GTImageListWidget : public QWidget
 public:
   bool deleteItem(GTImageItem *it);
   bool addItem(const QString & filename);
-  bool addItems(const QList <QString> & filenames);
+  bool addItems(const QStringList & filenames);
+
+  QAction *openAction;
+  QAction *moveUpAction;
+  QAction *moveDownAction;
+  QAction *deleteAction;
 
 
 
@@ -52,6 +58,7 @@ signals:
 
 public slots:
   void selectImage(GTImageItem *);
+  void startOpenDialog(void);
 
 };
 
