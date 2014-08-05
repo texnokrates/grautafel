@@ -58,6 +58,8 @@ signals:
 
 public slots:
   void selectImage(GTImageItem *);
+  void moveSelectedUp(void);
+  void moveSelectedDown(void);
   void startOpenDialog(void);
 
 };

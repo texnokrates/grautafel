@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QScrollArea>
 
 GTMainWidget::GTMainWidget(QWidget *parent) :
   QWidget(parent)
@@ -28,12 +29,21 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
                    view, SLOT(setImage(GTImage*)));
   QObject::connect(openButton, SIGNAL(clicked()),
                    listWidget->openAction, SLOT(trigger()));
+  QObject::connect(upButton, SIGNAL(clicked()),
+                   listWidget->moveUpAction, SLOT(trigger()));
+  QObject::connect(downButton, SIGNAL(clicked()),
+                   listWidget->moveDownAction, SLOT(trigger()));
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;
   layout->addWidget(view);
   layout->addWidget(buttonWidget);
-  layout->addWidget(listWidget);
-  setLayout(layout);
 
+  QScrollArea *lwarea = new QScrollArea;
+  lwarea->setWidget(listWidget);
+  lwarea->setWidgetResizable(true);
+  // FIXME sem skutečnou šířku scrollbaru místo konstanty 30
+  lwarea->setFixedWidth(GTImage::ThumbnailWidth + 30);
+  layout->addWidget(lwarea);
+  setLayout(layout);
 }

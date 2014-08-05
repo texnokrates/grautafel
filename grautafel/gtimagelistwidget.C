@@ -55,6 +55,11 @@ GTImageListWidget::GTImageListWidget(QWidget *parent) :
 
   connect(openAction, SIGNAL(triggered()),
           this, SLOT(startOpenDialog()));
+  connect(moveUpAction, SIGNAL(triggered()),
+          this, SLOT(moveSelectedUp()));
+  connect(moveDownAction, SIGNAL(triggered()),
+          this, SLOT(moveSelectedDown()));
+  setMinimumWidth(GTImage::ThumbnailWidth+6);
 }
 
 bool GTImageListWidget::addItem(const QString & filename){
@@ -69,6 +74,30 @@ bool GTImageListWidget::addItem(const QString & filename){
 
   QObject::connect(item, SIGNAL(requestSelection(GTImageItem*)), this, SLOT(selectImage(GTImageItem*)));
   return true;
+}
+
+void GTImageListWidget::moveSelectedUp(void){
+  if(!selected) return;
+  int i = items.indexOf(selected);
+  Q_ASSERT(i >= 0);
+  if(i == 0) return; //Výše už to nepůjde
+  QLayoutItem *taken = layout->takeAt(i-1);
+  layout->insertItem(i, taken);
+  GTImageItem *taken2 = items.at(i-1);
+  items.removeAt(i-1);
+  items.insert(i, taken2);
+}
+
+void GTImageListWidget::moveSelectedDown(void){
+  if(!selected) return;
+  int i = items.indexOf(selected);
+  Q_ASSERT(i >= 0);
+  if(i == items.count() - 1) return; //Níže už to nepůjde
+  QLayoutItem *taken = layout->takeAt(i+1);
+  layout->insertItem(i, taken);
+  GTImageItem *taken2 = items.at(i+1);
+  items.removeAt(i+1);
+  items.insert(i, taken2);
 }
 
 bool GTImageListWidget::addItems(const QStringList &filenames){
