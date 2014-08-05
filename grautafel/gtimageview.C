@@ -137,3 +137,8 @@ void GTCornerItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
   QGraphicsObject::mouseReleaseEvent(event);
   emit requestBoundingRectUpdate();
 }
+
+void GTImageView::clear(void) {
+  pixmapItem_->setPixmap(QPixmap());
+  img_ = 0;
+}

@@ -28,6 +28,8 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
 
   listWidget = new GTImageListWidget;
   view = new GTImageView;
+  QObject::connect(listWidget, SIGNAL(emptied()),
+                   view, SLOT(clear()));
   QObject::connect(listWidget, SIGNAL(selectedImage(GTImage*)),
                    view, SLOT(setImage(GTImage*)));
   QObject::connect(openButton, SIGNAL(clicked()),

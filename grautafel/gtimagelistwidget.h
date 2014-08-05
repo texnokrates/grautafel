@@ -55,6 +55,7 @@ public:
 
 signals:
   void selectedImage(GTImage *);
+  void emptied(void);
 
 public slots:
   void selectImage(GTImageItem *);

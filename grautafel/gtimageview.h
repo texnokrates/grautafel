@@ -49,6 +49,7 @@ public slots:
   void updateSceneRect(void);
   void setImage(GTImage *); // uloží změny a načte nový obrázek
   void updateLines(void); // Přepočte polohy hranic
+  void clear(void);
 #if 0 // Doimplementovat
  void reset(void); // zruší změny na současném obrázku (načte hodnoty znova z něj)
 

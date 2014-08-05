@@ -102,7 +102,10 @@ void GTImageListWidget::deleteSelected(void){
   layout->removeWidget(selected);
   delete selected;
   selected = 0;
-  if (0 == items.count()) return; // TODO vynulovat plochu
+  if (0 == items.count()) {
+      emit emptied();
+      return;
+    }
   if (items.count() == i) items[i-1]->setFocus(Qt::OtherFocusReason);
   else emit items[i]->setFocus(Qt::OtherFocusReason);
 }
