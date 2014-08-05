@@ -2,10 +2,10 @@
 #define GTIMAGELISTWIDGET_H
 
 #include <QFrame>
-#include <QVBoxLayout>
+class QVBoxLayout;
 #include <QList>
-#include <gtimage.h>
-#include <QLabel>
+class GTImage;
+class QLabel;
 #include <QAction>
 
 class GTImageItem : public QFrame {
@@ -61,6 +61,7 @@ public slots:
   void moveSelectedUp(void);
   void moveSelectedDown(void);
   void startOpenDialog(void);
+  void deleteSelected(void);
 
 };
 

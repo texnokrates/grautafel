@@ -1,6 +1,10 @@
 #include "gtimagelistwidget.h"
 #include <QDebug>
 #include <QFileDialog>
+#include <gtimage.h>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QAction>
 
 GTImageItem::GTImageItem(const QString &srcname, QWidget *parent) :
   QFrame(parent)
@@ -59,6 +63,8 @@ GTImageListWidget::GTImageListWidget(QWidget *parent) :
           this, SLOT(moveSelectedUp()));
   connect(moveDownAction, SIGNAL(triggered()),
           this, SLOT(moveSelectedDown()));
+  connect(deleteAction, SIGNAL(triggered()),
+          this, SLOT(deleteSelected()));
   setMinimumWidth(GTImage::ThumbnailWidth+6);
 }
 
@@ -86,6 +92,19 @@ void GTImageListWidget::moveSelectedUp(void){
   GTImageItem *taken2 = items.at(i-1);
   items.removeAt(i-1);
   items.insert(i, taken2);
+}
+
+void GTImageListWidget::deleteSelected(void){
+  if(!selected) return;
+  int i = items.indexOf(selected);
+  Q_ASSERT(i >= 0);
+  items.removeAt(i);
+  layout->removeWidget(selected);
+  delete selected;
+  selected = 0;
+  if (0 == items.count()) return; // TODO vynulovat plochu
+  if (items.count() == i) items[i-1]->setFocus(Qt::OtherFocusReason);
+  else emit items[i]->setFocus(Qt::OtherFocusReason);
 }
 
 void GTImageListWidget::moveSelectedDown(void){

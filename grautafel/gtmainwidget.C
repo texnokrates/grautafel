@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QScrollArea>
+#include <gtimage.h>
 
 GTMainWidget::GTMainWidget(QWidget *parent) :
   QWidget(parent)
@@ -13,12 +14,14 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   QPushButton *upButton = new QPushButton(trUtf8("Move up"));
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
+  QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   QCheckBox *toggleTransformBox = new QCheckBox(trUtf8("Preview"));
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
   bwl->addWidget(upButton);
   bwl->addWidget(downButton);
+  bwl->addWidget(deleteButton);
   bwl->addWidget(toggleTransformBox);
   QWidget *buttonWidget = new QWidget;
   buttonWidget->setLayout(bwl);
@@ -33,6 +36,8 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
                    listWidget->moveUpAction, SLOT(trigger()));
   QObject::connect(downButton, SIGNAL(clicked()),
                    listWidget->moveDownAction, SLOT(trigger()));
+  QObject::connect(deleteButton, SIGNAL(clicked()),
+                   listWidget->deleteAction, SLOT(trigger()));
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;
