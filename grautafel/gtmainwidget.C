@@ -40,6 +40,8 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
                    listWidget->moveDownAction, SLOT(trigger()));
   QObject::connect(deleteButton, SIGNAL(clicked()),
                    listWidget->deleteAction, SLOT(trigger()));
+  QObject::connect(toggleTransformBox, SIGNAL(toggled(bool)),
+                   view, SLOT(preview(bool)));
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;

@@ -6,6 +6,7 @@
 #include <QPointF>
 #include <QPen>
 #include <cmath>
+#include <QScrollBar>
 
 
 GTImageView::GTImageView(QWidget *parent) :
@@ -44,6 +45,8 @@ GTImageView::GTImageView(QWidget *parent) :
               this, SLOT(updateSceneRect(void)));
     }
 
+  setDragMode(QGraphicsView::ScrollHandDrag);
+
   setScene(sc_);
 }
 
@@ -66,8 +69,14 @@ void GTImageView::setImage(GTImage *newimg) {
   emit cornersChanged();
   QRectF cbrect = cornersBoundingRect();
   updateSceneRect();
-  setZoom(qMin(1.,width()/cbrect.width()));
-  ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
+  if (0 == img_->lastZoom()){
+      setZoom(qMin(1.,width()/cbrect.width()));
+      ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
+    }
+  else {
+      setZoom(img_->lastZoom());
+      centerOn(img_->lastViewPoint());
+    }
 }
 
 void GTImageView::setZoom(qreal factor){
@@ -96,11 +105,41 @@ QVector<QPointF> GTImageView::corners(void) const {
 void GTImageView::saveChanges() {
   if(img_) {
       img_->setCorners(corners());
+      img_->setLastViewPoint(center());
+      img_->setLastZoom(zoom());
     }
+}
+
+/*!
+ * Returns (approximate) center of current visible area.
+ *
+ */
+
+QPointF GTImageView::center(void) const {
+  QPointF c;
+  // Prasárna, leč zdá se, že QGraphicsView nic lepšího neposkytuje
+  {
+    int xStep = horizontalScrollBar()->pageStep();
+    int xMax = horizontalScrollBar()->maximum();
+    int xMin = horizontalScrollBar()->minimum();
+    int xVal = horizontalScrollBar()->value();
+    qreal xr = (xVal - xMin + 0.5 * xStep) / ((qreal)(xMax - xMin + xStep));
+    c.setX(sceneRect().x() + sceneRect().width() * xr);
+  }
+  {
+    int yStep = verticalScrollBar()->pageStep();
+    int yMax = verticalScrollBar()->maximum();
+    int yMin = verticalScrollBar()->minimum();
+    int yVal = verticalScrollBar()->value();
+    qreal yr = (yVal - yMin + 0.5 * yStep) / ((qreal)(yMax - yMin + yStep));
+    c.setY(sceneRect().y() + sceneRect().height() * yr);
+  }
+  return c;
 }
 
 QRectF GTImageView::cornersBoundingRect() const {
   if (!img_) return QRectF(0,0,640,480);
+  // Následující možno předělat triviálně pomocí metod QPolygon
   qreal minX = 0, maxX = img_->srcImage().width();
   qreal minY = 0, maxY = img_->srcImage().height();
   for(int i = 0; i < 4; i++){
@@ -143,11 +182,20 @@ void GTImageView::clear(void) {
   img_ = 0;
 }
 
-void GTImageView::original(void) {
+void GTImageView::original_(void) {
   resetTransform();
+      if(img_ && img_->lastZoom()) {
+          setZoom(img_->lastZoom());
+          centerOn(img_->lastViewPoint());
+      }
 }
 
-void GTImageView::transformed(void) {
-
+void GTImageView::transformed_(void) {
+  if(img_)
+    setTransform(img_->transform());
+  // TODO nenechat stejný zoom jako při nenáhledu?
 }
 
+void GTImageView::preview(bool on) {
+  on ? transformed_() : original_();
+}

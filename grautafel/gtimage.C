@@ -28,6 +28,8 @@ GTImage::GTImage(const QString &fn, QObject *parent)
 
     targetSize_ = QSizeF(270,180); // FIXME natvrdo určená cílová velikost
 
+    setLastZoom(0);
+
 }
 
 int GTImage::srcWidth() {
@@ -185,4 +187,20 @@ QTransform GTImage::transform() const {
       qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
   }
   return tr;
+}
+
+void GTImage::setLastViewPoint(const QPointF &where) {
+  lastViewPoint_ = where;
+}
+
+void GTImage::setLastZoom(qreal zoom) {
+  lastZoom_ = zoom;
+}
+
+QPointF GTImage::lastViewPoint(void) const {
+  return lastViewPoint_;
+}
+
+qreal GTImage::lastZoom(void) const {
+  return lastZoom_;
 }

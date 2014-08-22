@@ -32,6 +32,9 @@ public:
 //      Fast = 0x1;
 //      Full = 0x2;
 //    };
+    struct settings {
+
+    };
 
 private:
     bool isOk_;
@@ -44,11 +47,17 @@ private:
     QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
     QSize size_;
     QSizeF targetSize_;
+    qreal lastZoom_;
+    QPointF lastViewPoint_;
     //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
 public:
+    void setLastViewPoint(const QPointF &where);
+    void setLastZoom(qreal zoom);
+    QPointF lastViewPoint(void) const;
+    qreal lastZoom(void) const;
 
     explicit GTImage(QObject *parent = 0);
     GTImage(const QString &fn, QObject *parent = 0);
