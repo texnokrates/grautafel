@@ -26,6 +26,8 @@ GTImage::GTImage(const QString &fn, QObject *parent)
     corners_[3] = QPointF(0, size_.height());
     cstat_ = SetToSourceCornersAtLoad;
 
+    targetSize_ = QSizeF(270,180); // FIXME natvrdo určená cílová velikost
+
 }
 
 int GTImage::srcWidth() {
@@ -157,4 +159,30 @@ QImage GTImage::srcImage(){
   src = src_;
   checkSrcUnload();
   return src;
+}
+
+QSizeF GTImage::targetSize() const {
+  return targetSize_;
+}
+
+void GTImage::setTargetSize(const QSizeF &s) {
+  targetSize_ = s;
+}
+
+QRectF GTImage::targetRect() const {
+  return QRectF(QPointF(0,0), targetSize()); // TODO dodělat případ okrajů a podobných cypovin
+}
+
+/*!
+ * \brief Returns the transform mapping the table on the photo to the target rectangle
+ * \return
+ */
+QTransform GTImage::transform() const {
+  QPolygonF photoQuad(corners_);
+  QPolygonF targetQuad(targetRect());
+  QTransform tr;
+  if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)){
+      qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
+  }
+  return tr;
 }

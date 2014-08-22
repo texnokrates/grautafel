@@ -142,3 +142,12 @@ void GTImageView::clear(void) {
   pixmapItem_->setPixmap(QPixmap());
   img_ = 0;
 }
+
+void GTImageView::original(void) {
+  resetTransform();
+}
+
+void GTImageView::transformed(void) {
+
+}
+

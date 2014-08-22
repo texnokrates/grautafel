@@ -46,6 +46,8 @@ signals:
   void cornersChanged(void);
 
 public slots:
+  void original(void);
+  void transformed(void);
   void updateSceneRect(void);
   void setImage(GTImage *); // uloží změny a načte nový obrázek
   void updateLines(void); // Přepočte polohy hranic

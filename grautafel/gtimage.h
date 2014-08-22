@@ -40,10 +40,10 @@ private:
         destFilename_; //!< Path to the transformed photograph.
     QImage src_, dest_;
     QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
-    QTransform transform_; // Transforms the original image to the target rectangle
+//  QTransform transform_; // Transforms the original image to the target rectangle
     QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
-
     QSize size_;
+    QSizeF targetSize_;
     //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
@@ -55,6 +55,9 @@ public:
     void setSrcFilename(const QString &fn) {
         srcFilename_ = fn;
     }
+    QSizeF targetSize(void) const;
+    QRectF targetRect(void) const;
+    void setTargetSize(const QSizeF &);
     QPixmap thumbnail(void);
     QVector<QPointF> corners(void);
     bool setCorners(const QVector<QPointF> &corners);
@@ -68,6 +71,7 @@ public:
         bs[i] = QLineF(corners_[i],corners_[(i+1)%4]);
       return bs;
     }
+    QTransform transform(void) const;
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
     //! Locates the board using the spiral algorithm.

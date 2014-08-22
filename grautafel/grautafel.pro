@@ -16,14 +16,15 @@ TARGET = grautafel
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    gtimage.cpp \
+SOURCES +=\
     gthoughtransform.C \
     gtconvolutionkernel.C \
     gtimageview.C \
     gtimagelistwidget.C \
-    gtmainwidget.C
+    gtmainwidget.C \
+    gtimage.C \
+    main.C \
+    mainwindow.C
 
 HEADERS  += mainwindow.h \
     gtimage.h \
