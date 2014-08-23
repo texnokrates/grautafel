@@ -15,7 +15,7 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
-  QCheckBox *toggleTransformBox = new QCheckBox(trUtf8("Preview"));
+  toggleTransformBox = new QCheckBox(trUtf8("Preview"));
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -40,8 +40,12 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
                    listWidget->moveDownAction, SLOT(trigger()));
   QObject::connect(deleteButton, SIGNAL(clicked()),
                    listWidget->deleteAction, SLOT(trigger()));
-  QObject::connect(toggleTransformBox, SIGNAL(toggled(bool)),
-                   view, SLOT(preview(bool)));
+  QObject::connect(toggleTransformBox, SIGNAL(stateChanged(int)),
+                   view, SLOT(setPreview(int)));
+  QObject::connect(toggleTransformBox, SIGNAL(stateChanged(int)),
+                   this, SLOT(ensurePreviewButtonNotTristate(int)));
+  QObject::connect(view, SIGNAL(newPreviewState(int)),
+                   this, SLOT(setPreviewButton(int)));
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;
@@ -55,4 +59,15 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   lwarea->setFixedWidth(GTImage::ThumbnailWidth + 30);
   layout->addWidget(lwarea);
   setLayout(layout);
+}
+
+void GTMainWidget::ensurePreviewButtonNotTristate(int state) {
+  if ((int)Qt::PartiallyChecked != state)
+    toggleTransformBox->setTristate(false);
+}
+
+void GTMainWidget::setPreviewButton(int qtCheckStatus) {
+  toggleTransformBox->setCheckState((Qt::CheckState) qtCheckStatus);
+  if (qtCheckStatus =! (int)Qt::PartiallyChecked)
+    toggleTransformBox->setTristate(false);
 }

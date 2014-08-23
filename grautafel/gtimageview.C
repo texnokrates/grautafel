@@ -7,6 +7,7 @@
 #include <QPen>
 #include <cmath>
 #include <QScrollBar>
+#include <QTransform>
 
 
 GTImageView::GTImageView(QWidget *parent) :
@@ -66,7 +67,6 @@ void GTImageView::setImage(GTImage *newimg) {
   setCorners(newimg->corners());
 
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
-  emit cornersChanged();
   QRectF cbrect = cornersBoundingRect();
   updateSceneRect();
   if (0 == img_->lastZoom()){
@@ -77,6 +77,8 @@ void GTImageView::setImage(GTImage *newimg) {
       setZoom(img_->lastZoom());
       centerOn(img_->lastViewPoint());
     }
+  emit imageChanged(newimg);
+  saveAndEmitPreviewStateChange(NotPreview);
 }
 
 void GTImageView::setZoom(qreal factor){
@@ -155,6 +157,7 @@ void GTImageView::updateLines(void) {
   for (int i = 0; i < 4; i++) {
       borderItems_[i]->setLine(QLineF(cornerItems_[i]->pos(), cornerItems_[(i+1)%4]->pos()));
     }
+  if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview); // FIXME tady je to dost nepřehledně zastrčené
 }
 
 void GTCornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
@@ -180,22 +183,54 @@ void GTCornerItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 void GTImageView::clear(void) {
   pixmapItem_->setPixmap(QPixmap());
   img_ = 0;
+  saveAndEmitPreviewStateChange(NotPreview);
 }
 
 void GTImageView::original_(void) {
+
   resetTransform();
       if(img_ && img_->lastZoom()) {
           setZoom(img_->lastZoom());
           centerOn(img_->lastViewPoint());
       }
+      saveAndEmitPreviewStateChange(NotPreview);
+}
+
+void GTImageView::saveAndEmitPreviewStateChange(PreviewState nps){
+  if (previewState_ != nps)
+    emit newPreviewState((int) (previewState_ = nps));
 }
 
 void GTImageView::transformed_(void) {
-  if(img_)
-    setTransform(img_->transform());
+  if(img_){
+    setTransform(quadToTarget());
+    saveAndEmitPreviewStateChange(NewPreview);
+  }
   // TODO nenechat stejný zoom jako při nenáhledu?
 }
 
-void GTImageView::preview(bool on) {
-  on ? transformed_() : original_();
+void GTImageView::setPreview(int on) {
+  if(on == (int) NotPreview) original_();
+  if(on == (int) NewPreview) transformed_();
+}
+
+void GTImageView::setPreview(bool isPreview) {
+  setPreview(isPreview ? (int) NewPreview : (int) NotPreview);
+}
+
+QTransform GTImageView::quadToTarget() const {
+  if (!img_) return QTransform();
+  else {
+    QPolygonF photoQuad(corners());
+    QPolygonF targetQuad(img_->targetRect());
+    targetQuad.pop_back(); // Workaround for a bug in QTransform::squareToQuad().
+    //qDebug() << photoQuad;
+    //qDebug() << targetQuad;
+    QTransform tr;
+    if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)){
+      qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
+  }
+  //qDebug() << tr;
+  return tr;
+}
 }

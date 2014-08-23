@@ -80,7 +80,7 @@ public:
         bs[i] = QLineF(corners_[i],corners_[(i+1)%4]);
       return bs;
     }
-    QTransform transform(void) const;
+    QTransform transform(void);
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
     //! Locates the board using the spiral algorithm.

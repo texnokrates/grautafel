@@ -129,7 +129,7 @@ bool GTImage::checkSrcLoad(){
     return true;
 }
 
-QVector<QPointF> GTImage::corners(){
+QVector<QPointF> GTImage::corners() {
   if(cstat_ != NotSet) return corners_;
   else {
       corners_[0] = QPointF(0,0);
@@ -176,16 +176,22 @@ QRectF GTImage::targetRect() const {
 }
 
 /*!
- * \brief Returns the transform mapping the table on the photo to the target rectangle
+ * \brief Returns the transform mapping the table on the photo to the target rectangle.
+ *
+ * Beware that this is calculated from the _saved_ corner positions.
  * \return
  */
-QTransform GTImage::transform() const {
-  QPolygonF photoQuad(corners_);
+QTransform GTImage::transform() {
+  QPolygonF photoQuad(corners());
   QPolygonF targetQuad(targetRect());
+  targetQuad.pop_back(); // Workaround for a bug in QTransform::squareToQuad().
+  qDebug() << photoQuad;
+  qDebug() << targetQuad;
   QTransform tr;
   if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)){
       qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
   }
+  qDebug() << tr;
   return tr;
 }
 
