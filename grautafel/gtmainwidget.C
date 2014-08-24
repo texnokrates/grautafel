@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QScrollArea>
 #include <gtimage.h>
+#include <viewzoomwidget.h>
 
 GTMainWidget::GTMainWidget(QWidget *parent) :
   QWidget(parent)
@@ -16,6 +17,7 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox = new QCheckBox(trUtf8("Preview"));
+  GTImageViewZoomWidget *zoomWidget = new GTImageViewZoomWidget;
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -23,6 +25,7 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   bwl->addWidget(downButton);
   bwl->addWidget(deleteButton);
   bwl->addWidget(toggleTransformBox);
+  bwl->addWidget(zoomWidget);
   QWidget *buttonWidget = new QWidget;
   buttonWidget->setLayout(bwl);
 
@@ -68,6 +71,6 @@ void GTMainWidget::ensurePreviewButtonNotTristate(int state) {
 
 void GTMainWidget::setPreviewButton(int qtCheckStatus) {
   toggleTransformBox->setCheckState((Qt::CheckState) qtCheckStatus);
-  if (qtCheckStatus =! (int)Qt::PartiallyChecked)
+  if (qtCheckStatus != (int)Qt::PartiallyChecked)
     toggleTransformBox->setTristate(false);
 }

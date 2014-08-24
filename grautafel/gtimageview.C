@@ -65,12 +65,12 @@ void GTImageView::setImage(GTImage *newimg) {
 
   img_ = newimg;
   setCorners(newimg->corners());
+  saveAndEmitPreviewStateChange(NotPreview);
 
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
-  QRectF cbrect = cornersBoundingRect();
   updateSceneRect();
   if (0 == img_->lastZoom()){
-      setZoom(qMin(1.,width()/cbrect.width()));
+      setZoom(fitToWidthZoom());
       ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
     }
   else {
@@ -78,7 +78,11 @@ void GTImageView::setImage(GTImage *newimg) {
       centerOn(img_->lastViewPoint());
     }
   emit imageChanged(newimg);
-  saveAndEmitPreviewStateChange(NotPreview);
+}
+
+qreal GTImageView::fitToWidthZoom(void) const {
+  QRectF cbrect = cornersBoundingRect();
+  return qMin(1., width()/cbrect.width());
 }
 
 void GTImageView::setZoom(qreal factor){

@@ -24,7 +24,8 @@ SOURCES +=\
     gtmainwidget.C \
     gtimage.C \
     main.C \
-    mainwindow.C
+    mainwindow.C \
+    viewzoomwidget.C
 
 HEADERS  += mainwindow.h \
     gtimage.h \
@@ -32,6 +33,7 @@ HEADERS  += mainwindow.h \
     gtconvolutionkernel.h \
     gtimageview.h \
     gtimagelistwidget.h \
-    gtmainwidget.h
+    gtmainwidget.h \
+    viewzoomwidget.h
 
 FORMS    += mainwindow.ui

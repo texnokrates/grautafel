@@ -38,6 +38,7 @@ public:
   QRectF cornersBoundingRect(void) const;
   void setZoom(qreal factor);
   qreal zoom(void) const;
+  qreal fitToWidthZoom(void) const;
   QPointF center(void) const;
   QTransform quadToTarget(void) const;
 signals:
