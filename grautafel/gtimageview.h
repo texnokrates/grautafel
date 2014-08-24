@@ -7,6 +7,7 @@ class QGraphicsScene;
 #include <QGraphicsObject>
 #include <QVector>
 #include <QPointF>
+class QAction;
 class QTransform;
 
 class GTCornerItem : public QGraphicsObject{
@@ -41,6 +42,9 @@ public:
   qreal fitToWidthZoom(void) const;
   QPointF center(void) const;
   QTransform quadToTarget(void) const;
+
+  QAction *zoomInAction, *zoomOutAction,
+     *zoomFitToWidthAction;
 signals:
   // TODO dodělat signály pro stavový řádek
   void imageChanged(GTImage *);

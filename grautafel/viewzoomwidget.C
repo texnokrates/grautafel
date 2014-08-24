@@ -1,24 +1,25 @@
 #include "viewzoomwidget.h"
 #include <QLocale>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
+
+// Chci to předělat na QToolBar
 
 GTImageViewZoomWidget::GTImageViewZoomWidget(QWidget *parent) :
-  QAbstractSpinBox(parent)
+  QWidget(parent)
 {
-  setButtonSymbols(QAbstractSpinBox::PlusMinus);
   locale_ = locale();
+  plusButton_ = new QPushButton(QString("^+"));
+  minusButton_ = new QPushButton(QString("^-"));
+  sizeLabel_ = new QLabel();
+
+  QHBoxLayout * l = new QHBoxLayout;
+  l->addWidget(minusButton_);
+  l->addWidget(sizeLabel_);
+  l->addWidget(plusButton_);
 }
 
-QValidator::State GTImageViewZoomWidget::validate (QString & input, int & pos) const {
-  // Very basic functionality
-  bool ok;
-  locale_.toFloat(input, &ok);
-  return ok ? QValidator::Acceptable : QValidator::Invalid;
-}
-
-void GTImageViewZoomWidget::stepBy(int steps) {
-  //TODO
-}
-
-void GTImageViewZoomWidget::fixup(QString & input) const {
-  //TODO
+void GTImageViewZoomWidget::setImageView(GTImageView *v){
+  // TODO
 }
