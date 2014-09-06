@@ -4,7 +4,7 @@
 #include <QSize>
 
 
-GTImage::GTImage(const QString &fn, QObject *parent)
+GTImage::GTImage(const QString &fn, QObject *parent, const struct Settings &settings)
 {
     isOk_ = true;
     setSrcFilename(fn);
@@ -26,7 +26,7 @@ GTImage::GTImage(const QString &fn, QObject *parent)
     corners_[3] = QPointF(0, size_.height());
     cstat_ = SetToSourceCornersAtLoad;
 
-    targetSize_ = QSizeF(270,180); // FIXME natvrdo určená cílová velikost
+    settings_ = settings;
 
     setLastZoom(0);
 
@@ -164,15 +164,15 @@ QImage GTImage::srcImage(){
 }
 
 QSizeF GTImage::targetSize() const {
-  return targetSize_;
+  return settings_.targetRect.size();
 }
 
 void GTImage::setTargetSize(const QSizeF &s) {
-  targetSize_ = s;
+  settings_.targetRect.setSize(s);
 }
 
 QRectF GTImage::targetRect() const {
-  return QRectF(QPointF(0,0), targetSize()); // TODO dodělat případ okrajů a podobných cypovin
+  return settings_.targetRect;
 }
 
 /*!

@@ -9,6 +9,8 @@
 #include <QPointF>
 #include <QVector>
 #include <QPolygon>
+#include <QPagedPaintDevice>
+#include <QPageLayout>
 
 //! A class holding individual source image (if needed), info and transformation data.
 /*!
@@ -32,8 +34,11 @@ public:
 //      Fast = 0x1;
 //      Full = 0x2;
 //    };
-    struct settings {
-
+    struct Settings {
+      QRectF targetRect;
+      QPagedPaintDevice::PageSize pageSize;
+      QSizeF pageSizeMM;
+      QPageLayout::Orientation orientation;
     };
 
 private:
@@ -46,9 +51,10 @@ private:
 //  QTransform transform_; // Transforms the original image to the target rectangle
     QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
     QSize size_;
-    QSizeF targetSize_;
+    QRectF targetRect_;
     qreal lastZoom_;
     QPointF lastViewPoint_;
+    struct Settings settings_;
     //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
@@ -60,7 +66,8 @@ public:
     qreal lastZoom(void) const;
 
     explicit GTImage(QObject *parent = 0);
-    GTImage(const QString &fn, QObject *parent = 0);
+    GTImage(const QString &fn, QObject *parent = 0, const Settings &settings = {QRectF(13.5, 15, 270,180),
+        QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape});
     void setSrcFilename(const QString &fn) {
         srcFilename_ = fn;
     }
