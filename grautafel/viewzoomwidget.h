@@ -3,22 +3,24 @@
 
 #include <QAbstractSpinBox>
 #include <QLocale>
+#include <QToolBar>
 class QPushButton;
 class QLabel;
 class GTImageView;
 
-class GTImageViewZoomWidget : public QWidget
+class GTImageViewZoomWidget : public QToolBar
 {
   Q_OBJECT
 public:
-  explicit GTImageViewZoomWidget(QWidget *parent = 0);
-  void setImageView(GTImageView *v);
+  explicit GTImageViewZoomWidget(GTImageView *view, QWidget *parent = 0);
+//  void setImageView(GTImageView *v);
 signals:
 
 public slots:
+  void displayZoom(qreal);
 private:
-  QPushButton *plusButton_;
-  QPushButton *minusButton_;
+//  QPushButton *plusButton_;
+//  QPushButton *minusButton_;
   QLabel *sizeLabel_;
   GTImageView *view_;
   float zoom_;

@@ -12,12 +12,13 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
 {
 
   // Todo číst texty tlačítek z akcí
+  view = new GTImageView;
   QPushButton *upButton = new QPushButton(trUtf8("Move up"));
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox = new QCheckBox(trUtf8("Preview"));
-  GTImageViewZoomWidget *zoomWidget = new GTImageViewZoomWidget;
+  GTImageViewZoomWidget *zoomWidget = new GTImageViewZoomWidget(view);
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -30,7 +31,6 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   buttonWidget->setLayout(bwl);
 
   listWidget = new GTImageListWidget;
-  view = new GTImageView;
   QObject::connect(listWidget, SIGNAL(emptied()),
                    view, SLOT(clear()));
   QObject::connect(listWidget, SIGNAL(selectedImage(GTImage*)),

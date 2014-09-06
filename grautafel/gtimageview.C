@@ -8,7 +8,7 @@
 #include <cmath>
 #include <QScrollBar>
 #include <QTransform>
-
+#include <QAction>
 
 GTImageView::GTImageView(QWidget *parent) :
   QGraphicsView(parent)
@@ -45,6 +45,16 @@ GTImageView::GTImageView(QWidget *parent) :
       connect(cornerItems_[i], SIGNAL(requestBoundingRectUpdate()),
               this, SLOT(updateSceneRect(void)));
     }
+
+  zoomInAction = new QAction(trUtf8("Zoom in"), this);
+  zoomOutAction = new QAction(trUtf8("Zoom out"), this);
+  zoomFitToWidthAction = new QAction(trUtf8("Fit to width"), this);
+  connect(zoomInAction, SIGNAL(triggered()),
+          this, SLOT(zoomIn()));
+  connect(zoomOutAction, SIGNAL(triggered()),
+          this, SLOT(zoomOut()));
+  connect(zoomFitToWidthAction, SIGNAL(triggered()),
+          this, SLOT(zoomToWidth()));
 
   setDragMode(QGraphicsView::ScrollHandDrag);
 
@@ -90,12 +100,30 @@ void GTImageView::setZoom(qreal factor){
   for(int i = 0; i < 4; i++) {
       cornerItems_[i]->setScale(1./factor);
     }
+  emit zoomChanged(factor);
+}
+
+void GTImageView::zoomIn(qreal factor) {
+  setZoom(zoom() * factor);
+}
+
+void GTImageView::zoomOut(qreal divisor) {
+  setZoom(zoom() / divisor);
+}
+
+void GTImageView::zoomToWidth(void) {
+  setZoom(fitToWidthZoom());
 }
 
 void GTImageView::updateSceneRect(){
   setSceneRect(cornersBoundingRect().adjusted(-15,-15,30,30));
 }
 
+
+/*!
+ * \brief GTImageView::zoom
+ * \return The current zoom factor.
+ */
 qreal GTImageView::zoom(void) const {
   return std::sqrt(transform().det());
 }

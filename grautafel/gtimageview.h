@@ -49,7 +49,11 @@ signals:
   // TODO dodělat signály pro stavový řádek
   void imageChanged(GTImage *);
   void newPreviewState(int); // oznámí případnou změnu stavu (např. při změně rohů, načtení nového obr, ...) pro tlačítko
+  void zoomChanged(qreal);
 public slots:
+  void zoomToWidth(void);
+  void zoomOut(qreal divisor = 1.25);
+  void zoomIn(qreal factor = 1.25);
   void setPreview(int /*PreviewState*/ previewState); // partiallyChecked does nothing
   void setPreview(bool isPreview); // overloaded
   void updateSceneRect(void);
