@@ -9,6 +9,7 @@
 #include <QScrollBar>
 #include <QTransform>
 #include <QAction>
+#include <QIcon>
 
 GTImageView::GTImageView(QWidget *parent) :
   QGraphicsView(parent)
@@ -46,8 +47,8 @@ GTImageView::GTImageView(QWidget *parent) :
               this, SLOT(updateSceneRect(void)));
     }
 
-  zoomInAction = new QAction(trUtf8("Zoom in"), this);
-  zoomOutAction = new QAction(trUtf8("Zoom out"), this);
+  zoomInAction = new QAction(QIcon::fromTheme("zoom-in"), trUtf8("Zoom in"), this);
+  zoomOutAction = new QAction(QIcon::fromTheme("zoom-out"), trUtf8("Zoom out"), this);
   zoomFitToWidthAction = new QAction(trUtf8("Fit to width"), this);
   connect(zoomInAction, SIGNAL(triggered()),
           this, SLOT(zoomIn()));
@@ -96,11 +97,11 @@ qreal GTImageView::fitToWidthZoom(void) const {
 }
 
 void GTImageView::setZoom(qreal factor){
-  setTransform(QTransform::fromScale(factor, factor));
+  setTransform(transform() * QTransform::fromScale(factor/zoom(), factor/zoom()));
   for(int i = 0; i < 4; i++) {
       cornerItems_[i]->setScale(1./factor);
     }
-  emit zoomChanged(factor);
+  emit zoomChanged(zoom());
 }
 
 void GTImageView::zoomIn(qreal factor) {
@@ -219,13 +220,13 @@ void GTImageView::clear(void) {
 }
 
 void GTImageView::original_(void) {
+  setTransform(QTransform::fromScale(zoom(), zoom()));
 
-  resetTransform();
-      if(img_ && img_->lastZoom()) {
-          setZoom(img_->lastZoom());
-          centerOn(img_->lastViewPoint());
-      }
-      saveAndEmitPreviewStateChange(NotPreview);
+  if(img_ && img_->lastZoom()) {
+      setZoom(img_->lastZoom());
+      centerOn(img_->lastViewPoint());
+  }
+  saveAndEmitPreviewStateChange(NotPreview);
 }
 
 void GTImageView::saveAndEmitPreviewStateChange(PreviewState nps){
@@ -235,7 +236,10 @@ void GTImageView::saveAndEmitPreviewStateChange(PreviewState nps){
 
 void GTImageView::transformed_(void) {
   if(img_){
-    setTransform(quadToTarget());
+      qreal oldZoom = zoom();
+      QTransform qtt = quadToTarget();
+      qreal qttScale = std::sqrt(qtt.determinant());
+      setTransform(qtt * QTransform::fromScale(oldZoom/qttScale, oldZoom/qttScale));
     saveAndEmitPreviewStateChange(NewPreview);
   }
   // TODO nenechat stejný zoom jako při nenáhledu?

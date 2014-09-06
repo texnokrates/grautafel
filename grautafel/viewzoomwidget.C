@@ -19,10 +19,10 @@ GTImageViewZoomWidget::GTImageViewZoomWidget(GTImageView *view, QWidget *parent)
 
 //  QHBoxLayout * l = new QHBoxLayout;
 //  l->addWidget(minusButton_);
-  addAction(view->zoomOutAction);
 //  l->addWidget(sizeLabel_);
-  addWidget(sizeLabel_);
 //  l->addWidget(plusButton_);
+  addWidget(sizeLabel_);
+  addAction(view->zoomOutAction);
   addAction(view->zoomInAction);
 //  setLayout(l);
   QObject::connect(view_, SIGNAL(zoomChanged(qreal)), this, SLOT(displayZoom(qreal)));
