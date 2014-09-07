@@ -11,25 +11,24 @@
  * All image data is ARGB32.
  * On the other hand, the kernel is grayscale and applies to each RGB symmetrically, using Euclidean metric.
  */
-
-struct GTConvolutionKernel
-{
-  int xsiz, ysiz;
-  int xorig, yorig;
-  unsigned char *data;
-  int normNumerator, normDenominator; // rozmyslet: nemusí být float?
+namespace GT {
+  struct ConvolutionKernel {
+    int xsiz, ysiz;
+    int xorig, yorig;
+    unsigned char *data;
+    int normNumerator, normDenominator; // rozmyslet: nemusí být float?
 //  QImage::format format;
-  double dConvolveSquared(const QImage *img, QPoint point) const; // Outputs *grayscale*; for test purposes only
-  int convolveSquared(const QImage *img, QPoint point, int additionalMultiplier = 1) const; // Outputs *grayscale*; for test purposes only
+    double dConvolveSquared(const QImage *img, QPoint point) const; // Outputs *grayscale*; for test purposes only
+    int convolveSquared(const QImage *img, QPoint point, int additionalMultiplier = 1) const; // Outputs *grayscale*; for test purposes only
 
-  int convolveSquaredNotNormalised(const QImage *img, QPoint point) const; // Outputs *grayscale*; for test purposes only
+    int convolveSquaredNotNormalised(const QImage *img, QPoint point) const; // Outputs *grayscale*; for test purposes only
 //  QImage convolveSquared(QImage *img, QRect area); // Outputs grayscale, too
 
-};
+  };
 
-QImage *edgePreview(const QImage *img, QRect area);
+  QImage *edgePreview(const QImage *img, QRect area);
 
-extern const struct GTConvolutionKernel * const edgeDetectorX, * const edgeDetectorY;
-extern const struct GTConvolutionKernel sobelX, sobelY, prewittX, prewittY, robertsPlus, robertsMinus;
-
+  extern const struct ConvolutionKernel * const edgeDetectorX, * const edgeDetectorY;
+  extern const struct ConvolutionKernel sobelX, sobelY, prewittX, prewittY, robertsPlus, robertsMinus;
+}
 #endif // GTCONVOLUTIONKERNEL_H

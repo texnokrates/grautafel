@@ -25,15 +25,17 @@ SOURCES +=\
     gtimage.C \
     main.C \
     mainwindow.C \
-    viewzoomwidget.C
+    viewzoomwidget.C \
+    pagedialog.C
 
 HEADERS  += mainwindow.h \
     gtimage.h \
     gthoughtransform.h \
-    gtconvolutionkernel.h \
     gtimageview.h \
     gtimagelistwidget.h \
     gtmainwidget.h \
-    viewzoomwidget.h
+    viewzoomwidget.h \
+    pagedialog.h \
+    gtconvolutionkernel.h
 
 FORMS    += mainwindow.ui

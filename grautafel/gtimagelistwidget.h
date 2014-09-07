@@ -4,66 +4,68 @@
 #include <QFrame>
 class QVBoxLayout;
 #include <QList>
-class GTImage;
 class QLabel;
 #include <QAction>
 
-class GTImageItem : public QFrame {
-  Q_OBJECT
-  GTImage *img_;
-  QLabel *thumbnail_;
-  QVBoxLayout *layout_;
+namespace GT {
+  class Image;
+  class ImageItem : public QFrame {
+    Q_OBJECT
+    Image *img_;
+    QLabel *thumbnail_;
+    QVBoxLayout *layout_;
 //  QLabel *nameLine_;
 
-public:
-  explicit GTImageItem(const QString &srcname, QWidget *parent = 0);
-  GTImage *image(void) const {return img_;}
-  void drawSelected(void);
-  void drawUnselected(void);
+  public:
+    explicit ImageItem(const QString &srcname, QWidget *parent = 0);
+    Image *image(void) const {
+      return img_;
+    }
+    void drawSelected(void);
+    void drawUnselected(void);
 
 
-signals:
-  void requestSelection(GTImageItem *myself);
-  void destroyMe(GTImageItem *myself);
+  signals:
+    void requestSelection(ImageItem *myself);
+    void destroyMe(ImageItem *myself);
 
-public slots:
-  void unselect(void); // (potřebuji to jako slot?)
-protected:
-  void focusInEvent(QFocusEvent *);
-};
+  public slots:
+    void unselect(void); // (potřebuji to jako slot?)
+  protected:
+    void focusInEvent(QFocusEvent *);
+  };
 
-class GTImageListWidget : public QWidget
-{
-  Q_OBJECT
-  QVBoxLayout * layout;
-  QList <GTImageItem *> items; // Nutné kvůli mazání a přehazování
-  GTImageItem *selected;
-public:
-  bool deleteItem(GTImageItem *it);
-  bool addItem(const QString & filename);
-  bool addItems(const QStringList & filenames);
+  class ImageListWidget : public QWidget {
+    Q_OBJECT
+    QVBoxLayout * layout;
+    QList <ImageItem *> items; // Nutné kvůli mazání a přehazování
+    ImageItem *selected;
+  public:
+    bool deleteItem(ImageItem *it);
+    bool addItem(const QString & filename);
+    bool addItems(const QStringList & filenames);
 
-  QAction *openAction;
-  QAction *moveUpAction;
-  QAction *moveDownAction;
-  QAction *deleteAction;
-
+    QAction *openAction;
+    QAction *moveUpAction;
+    QAction *moveDownAction;
+    QAction *deleteAction;
 
 
-public:
-  explicit GTImageListWidget(QWidget *parent = 0);
 
-signals:
-  void selectedImage(GTImage *);
-  void emptied(void);
+  public:
+    explicit ImageListWidget(QWidget *parent = 0);
 
-public slots:
-  void selectImage(GTImageItem *);
-  void moveSelectedUp(void);
-  void moveSelectedDown(void);
-  void startOpenDialog(void);
-  void deleteSelected(void);
+  signals:
+    void selectedImage(Image *);
+    void emptied(void);
 
-};
+  public slots:
+    void selectImage(ImageItem *);
+    void moveSelectedUp(void);
+    void moveSelectedDown(void);
+    void startOpenDialog(void);
+    void deleteSelected(void);
 
+  };
+}
 #endif // GTIMAGELISTWIDGET_H

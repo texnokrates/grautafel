@@ -6,11 +6,12 @@
 #include <QLabel>
 #include <QAction>
 
-GTImageItem::GTImageItem(const QString &srcname, QWidget *parent) :
-  QFrame(parent)
-{
+using namespace GT;
+
+ImageItem::ImageItem(const QString &srcname, QWidget *parent) :
+  QFrame(parent) {
   const int ls = 3;
-  img_ = new GTImage(srcname, this);
+  img_ = new Image(srcname, this);
   thumbnail_ = new QLabel;
   thumbnail_->setPixmap(img_->thumbnail());
   layout_ = new QVBoxLayout();
@@ -22,33 +23,30 @@ GTImageItem::GTImageItem(const QString &srcname, QWidget *parent) :
   setLayout(layout_);
   setLineWidth(ls);
   drawUnselected();
-  setFixedSize(2*frameWidth()+GTImage::ThumbnailWidth, 2*frameWidth()+GTImage::ThumbnailHeight);
+  setFixedSize(2*frameWidth()+Image::ThumbnailWidth, 2*frameWidth()+Image::ThumbnailHeight);
   setFocusPolicy(Qt::StrongFocus);
 }
 
-void GTImageItem::drawSelected()
-{
+void ImageItem::drawSelected() {
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
 }
 
-void GTImageItem::focusInEvent(QFocusEvent *event) {
+void ImageItem::focusInEvent(QFocusEvent *event) {
   drawSelected();
   qDebug() << "Focus on GTImageItem at " <<this;
   emit requestSelection(this);
 }
 
-void GTImageItem::drawUnselected()
-{
+void ImageItem::drawUnselected() {
   setFrameStyle(QFrame::Panel | QFrame::Raised);
 }
 
-void GTImageItem::unselect(){
+void ImageItem::unselect() {
   drawUnselected();
 }
 
-GTImageListWidget::GTImageListWidget(QWidget *parent) :
-  QWidget(parent)
-{
+ImageListWidget::ImageListWidget(QWidget *parent) :
+  QWidget(parent) {
   layout = new QVBoxLayout;
   setLayout(layout);
   selected = 0;
@@ -65,36 +63,36 @@ GTImageListWidget::GTImageListWidget(QWidget *parent) :
           this, SLOT(moveSelectedDown()));
   connect(deleteAction, SIGNAL(triggered()),
           this, SLOT(deleteSelected()));
-  setMinimumWidth(GTImage::ThumbnailWidth+6);
+  setMinimumWidth(Image::ThumbnailWidth+6);
 }
 
-bool GTImageListWidget::addItem(const QString & filename){
-  GTImageItem *item = new GTImageItem(filename);
-  if(!item->image()->isOk()){
-      delete item;
-      return false;
-    }
+bool ImageListWidget::addItem(const QString & filename) {
+  ImageItem *item = new ImageItem(filename);
+  if(!item->image()->isOk()) {
+    delete item;
+    return false;
+  }
 
   items.append(item);
   layout->addWidget(item);
 
-  QObject::connect(item, SIGNAL(requestSelection(GTImageItem*)), this, SLOT(selectImage(GTImageItem*)));
+  QObject::connect(item, SIGNAL(requestSelection(ImageItem*)), this, SLOT(selectImage(ImageItem*)));
   return true;
 }
 
-void GTImageListWidget::moveSelectedUp(void){
+void ImageListWidget::moveSelectedUp(void) {
   if(!selected) return;
   int i = items.indexOf(selected);
   Q_ASSERT(i >= 0);
   if(i == 0) return; //Výše už to nepůjde
   QLayoutItem *taken = layout->takeAt(i-1);
   layout->insertItem(i, taken);
-  GTImageItem *taken2 = items.at(i-1);
+  ImageItem *taken2 = items.at(i-1);
   items.removeAt(i-1);
   items.insert(i, taken2);
 }
 
-void GTImageListWidget::deleteSelected(void){
+void ImageListWidget::deleteSelected(void) {
   if(!selected) return;
   int i = items.indexOf(selected);
   Q_ASSERT(i >= 0);
@@ -103,39 +101,39 @@ void GTImageListWidget::deleteSelected(void){
   delete selected;
   selected = 0;
   if (0 == items.count()) {
-      emit emptied();
-      return;
-    }
+    emit emptied();
+    return;
+  }
   if (items.count() == i) items[i-1]->setFocus(Qt::OtherFocusReason);
   else emit items[i]->setFocus(Qt::OtherFocusReason);
 }
 
-void GTImageListWidget::moveSelectedDown(void){
+void ImageListWidget::moveSelectedDown(void) {
   if(!selected) return;
   int i = items.indexOf(selected);
   Q_ASSERT(i >= 0);
   if(i == items.count() - 1) return; //Níže už to nepůjde
   QLayoutItem *taken = layout->takeAt(i+1);
   layout->insertItem(i, taken);
-  GTImageItem *taken2 = items.at(i+1);
+  ImageItem *taken2 = items.at(i+1);
   items.removeAt(i+1);
   items.insert(i, taken2);
 }
 
-bool GTImageListWidget::addItems(const QStringList &filenames){
+bool ImageListWidget::addItems(const QStringList &filenames) {
   bool ok = true;
   for(QList<QString>::ConstIterator i = filenames.constBegin(); i != filenames.constEnd(); i++)
     if(!addItem(*i)) ok = false;
   return ok;
 }
 
-void GTImageListWidget::startOpenDialog() {
+void ImageListWidget::startOpenDialog() {
   QStringList filesToOpen = QFileDialog::getOpenFileNames(this, trUtf8("Open images"));
   if (filesToOpen.isEmpty()) return;
   addItems(filesToOpen);
 }
 
-void GTImageListWidget::selectImage(GTImageItem *item) {
+void ImageListWidget::selectImage(ImageItem *item) {
   // TODO ověřit, že je obsažen
   if(selected == item) return;
   if(selected) selected->unselect();

@@ -5,11 +5,12 @@
 #include <QLabel>
 #include <gtimageview.h>
 
-// Chci to předělat na QToolBar
+// Chci to předělat na QToolBar?
 
-GTImageViewZoomWidget::GTImageViewZoomWidget(GTImageView *view, QWidget *parent)
-  : QToolBar(parent)
-{
+using namespace GT;
+
+ZoomWidget::ZoomWidget(ImageView *view, QWidget *parent)
+  : QToolBar(parent) {
   Q_ASSERT(0 != view);
   view_ = view;
   locale_ = locale();
@@ -35,6 +36,6 @@ void GTImageViewZoomWidget::setImageView(GTImageView *v){
 }
 */
 
-void GTImageViewZoomWidget::displayZoom(qreal factor) {
+void ZoomWidget::displayZoom(qreal factor) {
   sizeLabel_->setText(locale_.toString(factor, 'f', 2));
 }

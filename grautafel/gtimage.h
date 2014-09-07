@@ -11,19 +11,18 @@
 #include <QPolygon>
 #include <QPagedPaintDevice>
 #include <QPageLayout>
-
+namespace GT {
 //! A class holding individual source image (if needed), info and transformation data.
-/*!
- * This class also holds the modified image if being currently edited
- * (or if the /unimplemented/ memory policy enables it; otherwise,
- * it is saved in the destFilename path).
- */
-class GTImage : public QObject
-{
+  /*!
+   * This class also holds the modified image if being currently edited
+   * (or if the /unimplemented/ memory policy enables it; otherwise,
+   * it is saved in the destFilename path).
+   */
+  class Image : public QObject {
     Q_OBJECT
-public:
-  static const int ThumbnailWidth = 128;
-  static const int ThumbnailHeight = 96;
+  public:
+    static const int ThumbnailWidth = 128;
+    static const int ThumbnailHeight = 96;
     enum CornersStatus {
       NotSet = 0x0,
       SetToSourceCornersAtLoad = 0x1,
@@ -41,11 +40,11 @@ public:
       QPageLayout::Orientation orientation;
     };
 
-private:
+  private:
     bool isOk_;
     CornersStatus cstat_;
     QString srcFilename_, //!< Path to the source photograph.
-        destFilename_; //!< Path to the transformed photograph.
+            destFilename_; //!< Path to the transformed photograph.
     QImage src_, dest_;
     QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
 //  QTransform transform_; // Transforms the original image to the target rectangle
@@ -59,17 +58,18 @@ private:
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
-public:
+  public:
     void setLastViewPoint(const QPointF &where);
     void setLastZoom(qreal zoom);
     QPointF lastViewPoint(void) const;
     qreal lastZoom(void) const;
 
-    explicit GTImage(QObject *parent = 0);
-    GTImage(const QString &fn, QObject *parent = 0, const Settings &settings = {QRectF(13.5, 15, 270,180),
-        QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape});
+    explicit Image(QObject *parent = 0);
+    Image(const QString &fn, QObject *parent = 0, const Settings &settings = {QRectF(13.5, 15, 270,180),
+                                                                              QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape
+                                                                             });
     void setSrcFilename(const QString &fn) {
-        srcFilename_ = fn;
+      srcFilename_ = fn;
     }
     QSizeF targetSize(void) const;
     QRectF targetRect(void) const;
@@ -102,12 +102,12 @@ public:
      * \param probs Numerical levels at which quantiles are wanted.
      */
     QList<QColor> getColorQuantiles (const QRect &area, const QList<qreal> &probs);
-    
-signals:
-    void srcLoadFailed(GTImage *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())
-    void changed(GTImage *);
-public slots:
-    
-};
 
+  signals:
+    void srcLoadFailed(Image *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())
+    void changed(Image *);
+  public slots:
+
+  };
+}
 #endif // GTIMAGE_H

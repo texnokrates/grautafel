@@ -11,17 +11,18 @@
 #include <QAction>
 #include <QIcon>
 
-GTImageView::GTImageView(QWidget *parent) :
-  QGraphicsView(parent)
-{
+using namespace GT;
+
+ImageView::ImageView(QWidget *parent) :
+  QGraphicsView(parent) {
   img_ = 0;
   sc_ = new QGraphicsScene(this);
   for (int i = 0; i < 4; i++) {
-      cornerItems_[i] = new GTCornerItem;
-      sc_->addItem(cornerItems_[i]);
-      cornerItems_[i]->setFlag(QGraphicsItem::ItemIsMovable);
-      cornerItems_[i]->setZValue(3);
-    }
+    cornerItems_[i] = new CornerItem;
+    sc_->addItem(cornerItems_[i]);
+    cornerItems_[i]->setFlag(QGraphicsItem::ItemIsMovable);
+    cornerItems_[i]->setZValue(3);
+  }
   // Nějaké výchozí počáteční postavení
   cornerItems_[0]->setPos(0,0);
   cornerItems_[1]->setPos(640, 0);
@@ -34,18 +35,18 @@ GTImageView::GTImageView(QWidget *parent) :
   pen.setColor(Qt::cyan);
   pen.setStyle(Qt::DashDotLine);
   for (int i = 0; i < 4; i++) {
-      borderItems_[i] = sc_->addLine(QLineF(cornerItems_[i]->pos(),cornerItems_[(i+1)%4]->pos()));
-      borderItems_[i]->setPen(pen);
+    borderItems_[i] = sc_->addLine(QLineF(cornerItems_[i]->pos(),cornerItems_[(i+1)%4]->pos()));
+    borderItems_[i]->setPen(pen);
 
 
-    }
+  }
   // Zde je potřeba naconnectit signály
   for (int i = 0; i < 4; i++) {
-      connect(cornerItems_[i], SIGNAL(xChanged()), this, SLOT(updateLines()));
-      connect(cornerItems_[i], SIGNAL(yChanged()), this, SLOT(updateLines()));
-      connect(cornerItems_[i], SIGNAL(requestBoundingRectUpdate()),
-              this, SLOT(updateSceneRect(void)));
-    }
+    connect(cornerItems_[i], SIGNAL(xChanged()), this, SLOT(updateLines()));
+    connect(cornerItems_[i], SIGNAL(yChanged()), this, SLOT(updateLines()));
+    connect(cornerItems_[i], SIGNAL(requestBoundingRectUpdate()),
+            this, SLOT(updateSceneRect(void)));
+  }
 
   zoomInAction = new QAction(QIcon::fromTheme("zoom-in"), trUtf8("Zoom in"), this);
   zoomOutAction = new QAction(QIcon::fromTheme("zoom-out"), trUtf8("Zoom out"), this);
@@ -62,15 +63,15 @@ GTImageView::GTImageView(QWidget *parent) :
   setScene(sc_);
 }
 
-bool GTImageView::setCorners(const QVector<QPointF> &corners){
-  for(int i = 0; i < 4; i++){
-      cornerItems_[i]->setX(corners[i].x());
-      cornerItems_[i]->setY(corners[i].y());
-    }
+bool ImageView::setCorners(const QVector<QPointF> &corners) {
+  for(int i = 0; i < 4; i++) {
+    cornerItems_[i]->setX(corners[i].x());
+    cornerItems_[i]->setY(corners[i].y());
+  }
   return true;
 }
 
-void GTImageView::setImage(GTImage *newimg) {
+void ImageView::setImage(Image *newimg) {
   if (img_ == newimg) return;
   saveChanges();
 
@@ -80,43 +81,42 @@ void GTImageView::setImage(GTImage *newimg) {
 
   pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
   updateSceneRect();
-  if (0 == img_->lastZoom()){
-      setZoom(fitToWidthZoom());
-      ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
-    }
-  else {
-      setZoom(img_->lastZoom());
-      centerOn(img_->lastViewPoint());
-    }
+  if (0 == img_->lastZoom()) {
+    setZoom(fitToWidthZoom());
+    ensureVisible(transform().mapRect(cornersBoundingRect()),15,15);
+  } else {
+    setZoom(img_->lastZoom());
+    centerOn(img_->lastViewPoint());
+  }
   emit imageChanged(newimg);
 }
 
-qreal GTImageView::fitToWidthZoom(void) const {
+qreal ImageView::fitToWidthZoom(void) const {
   QRectF cbrect = cornersBoundingRect();
   return qMin(1., width()/cbrect.width());
 }
 
-void GTImageView::setZoom(qreal factor){
+void ImageView::setZoom(qreal factor) {
   setTransform(transform() * QTransform::fromScale(factor/zoom(), factor/zoom()));
   for(int i = 0; i < 4; i++) {
-      cornerItems_[i]->setScale(1./factor);
-    }
+    cornerItems_[i]->setScale(1./factor);
+  }
   emit zoomChanged(zoom());
 }
 
-void GTImageView::zoomIn(qreal factor) {
+void ImageView::zoomIn(qreal factor) {
   setZoom(zoom() * factor);
 }
 
-void GTImageView::zoomOut(qreal divisor) {
+void ImageView::zoomOut(qreal divisor) {
   setZoom(zoom() / divisor);
 }
 
-void GTImageView::zoomToWidth(void) {
+void ImageView::zoomToWidth(void) {
   setZoom(fitToWidthZoom());
 }
 
-void GTImageView::updateSceneRect(){
+void ImageView::updateSceneRect() {
   setSceneRect(cornersBoundingRect().adjusted(-15,-15,30,30));
 }
 
@@ -125,24 +125,24 @@ void GTImageView::updateSceneRect(){
  * \brief GTImageView::zoom
  * \return The current zoom factor.
  */
-qreal GTImageView::zoom(void) const {
+qreal ImageView::zoom(void) const {
   return std::sqrt(transform().det());
 }
 
-QVector<QPointF> GTImageView::corners(void) const {
+QVector<QPointF> ImageView::corners(void) const {
   QVector<QPointF> c(4);
-  for(int i = 0; i < 4; i++){
-      c[i] = cornerItems_[i]->pos();
-    }
+  for(int i = 0; i < 4; i++) {
+    c[i] = cornerItems_[i]->pos();
+  }
   return c;
 }
 
-void GTImageView::saveChanges() {
+void ImageView::saveChanges() {
   if(img_) {
-      img_->setCorners(corners());
-      img_->setLastViewPoint(center());
-      img_->setLastZoom(zoom());
-    }
+    img_->setCorners(corners());
+    img_->setLastViewPoint(center());
+    img_->setLastZoom(zoom());
+  }
 }
 
 /*!
@@ -150,7 +150,7 @@ void GTImageView::saveChanges() {
  *
  */
 
-QPointF GTImageView::center(void) const {
+QPointF ImageView::center(void) const {
   QPointF c;
   // Prasárna, leč zdá se, že QGraphicsView nic lepšího neposkytuje
   {
@@ -172,28 +172,28 @@ QPointF GTImageView::center(void) const {
   return c;
 }
 
-QRectF GTImageView::cornersBoundingRect() const {
+QRectF ImageView::cornersBoundingRect() const {
   if (!img_) return QRectF(0,0,640,480);
   // Následující možno předělat triviálně pomocí metod QPolygon
   qreal minX = 0, maxX = img_->srcImage().width();
   qreal minY = 0, maxY = img_->srcImage().height();
-  for(int i = 0; i < 4; i++){
-      minX = qMin(minX, cornerItems_[i]->x());
-      maxX = qMax(maxX, cornerItems_[i]->x());
-      minY = qMin(minY, cornerItems_[i]->y());
-      maxY = qMax(maxY, cornerItems_[i]->y());
-    }
+  for(int i = 0; i < 4; i++) {
+    minX = qMin(minX, cornerItems_[i]->x());
+    maxX = qMax(maxX, cornerItems_[i]->x());
+    minY = qMin(minY, cornerItems_[i]->y());
+    maxY = qMax(maxY, cornerItems_[i]->y());
+  }
   return QRectF(minX, minY, maxX-minX, maxY-minY);
 }
 
-void GTImageView::updateLines(void) {
+void ImageView::updateLines(void) {
   for (int i = 0; i < 4; i++) {
-      borderItems_[i]->setLine(QLineF(cornerItems_[i]->pos(), cornerItems_[(i+1)%4]->pos()));
-    }
+    borderItems_[i]->setLine(QLineF(cornerItems_[i]->pos(), cornerItems_[(i+1)%4]->pos()));
+  }
   if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview); // FIXME tady je to dost nepřehledně zastrčené
 }
 
-void GTCornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void CornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
   QPen pen;
   pen.setColor(Qt::red);
   painter->setPen(pen);
@@ -204,57 +204,57 @@ void GTCornerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 }
 
-QRectF GTCornerItem::boundingRect(void) const {
+QRectF CornerItem::boundingRect(void) const {
   return QRectF(-1*radius_, -1*radius_, 2*radius_, 2*radius_);
 }
 
-void GTCornerItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+void CornerItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QGraphicsObject::mouseReleaseEvent(event);
   emit requestBoundingRectUpdate();
 }
 
-void GTImageView::clear(void) {
+void ImageView::clear(void) {
   pixmapItem_->setPixmap(QPixmap());
   img_ = 0;
   saveAndEmitPreviewStateChange(NotPreview);
 }
 
-void GTImageView::original_(void) {
+void ImageView::original_(void) {
   setTransform(QTransform::fromScale(zoom(), zoom()));
 
   if(img_ && img_->lastZoom()) {
-      setZoom(img_->lastZoom());
-      centerOn(img_->lastViewPoint());
+    setZoom(img_->lastZoom());
+    centerOn(img_->lastViewPoint());
   }
   saveAndEmitPreviewStateChange(NotPreview);
 }
 
-void GTImageView::saveAndEmitPreviewStateChange(PreviewState nps){
+void ImageView::saveAndEmitPreviewStateChange(PreviewState nps) {
   if (previewState_ != nps)
     emit newPreviewState((int) (previewState_ = nps));
 }
 
-void GTImageView::transformed_(void) {
-  if(img_){
-      qreal oldZoom = zoom();
-      QTransform qtt = quadToTarget();
-      qreal qttScale = std::sqrt(qtt.determinant());
-      setTransform(qtt * QTransform::fromScale(oldZoom/qttScale, oldZoom/qttScale));
+void ImageView::transformed_(void) {
+  if(img_) {
+    qreal oldZoom = zoom();
+    QTransform qtt = quadToTarget();
+    qreal qttScale = std::sqrt(qtt.determinant());
+    setTransform(qtt * QTransform::fromScale(oldZoom/qttScale, oldZoom/qttScale));
     saveAndEmitPreviewStateChange(NewPreview);
   }
   // TODO nenechat stejný zoom jako při nenáhledu?
 }
 
-void GTImageView::setPreview(int on) {
+void ImageView::setPreview(int on) {
   if(on == (int) NotPreview) original_();
   if(on == (int) NewPreview) transformed_();
 }
 
-void GTImageView::setPreview(bool isPreview) {
+void ImageView::setPreview(bool isPreview) {
   setPreview(isPreview ? (int) NewPreview : (int) NotPreview);
 }
 
-QTransform GTImageView::quadToTarget() const {
+QTransform ImageView::quadToTarget() const {
   if (!img_) return QTransform();
   else {
     QPolygonF photoQuad(corners());
@@ -263,10 +263,10 @@ QTransform GTImageView::quadToTarget() const {
     //qDebug() << photoQuad;
     //qDebug() << targetQuad;
     QTransform tr;
-    if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)){
+    if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)) {
       qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
+    }
+    //qDebug() << tr;
+    return tr;
   }
-  //qDebug() << tr;
-  return tr;
-}
 }

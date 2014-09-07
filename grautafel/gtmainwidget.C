@@ -7,18 +7,19 @@
 #include <gtimage.h>
 #include <viewzoomwidget.h>
 
-GTMainWidget::GTMainWidget(QWidget *parent) :
-  QWidget(parent)
-{
+using namespace GT;
+
+MainWidget::MainWidget(QWidget *parent) :
+  QWidget(parent) {
 
   // Todo číst texty tlačítek z akcí
-  view = new GTImageView;
+  view = new ImageView;
   QPushButton *upButton = new QPushButton(trUtf8("Move up"));
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox = new QCheckBox(trUtf8("Preview"));
-  GTImageViewZoomWidget *zoomWidget = new GTImageViewZoomWidget(view);
+  ZoomWidget *zoomWidget = new ZoomWidget(view);
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -30,11 +31,11 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   QWidget *buttonWidget = new QWidget;
   buttonWidget->setLayout(bwl);
 
-  listWidget = new GTImageListWidget;
+  listWidget = new ImageListWidget;
   QObject::connect(listWidget, SIGNAL(emptied()),
                    view, SLOT(clear()));
-  QObject::connect(listWidget, SIGNAL(selectedImage(GTImage*)),
-                   view, SLOT(setImage(GTImage*)));
+  QObject::connect(listWidget, SIGNAL(selectedImage(Image*)),
+                   view, SLOT(setImage(Image*)));
   QObject::connect(openButton, SIGNAL(clicked()),
                    listWidget->openAction, SLOT(trigger()));
   QObject::connect(upButton, SIGNAL(clicked()),
@@ -59,17 +60,17 @@ GTMainWidget::GTMainWidget(QWidget *parent) :
   lwarea->setWidget(listWidget);
   lwarea->setWidgetResizable(true);
   // FIXME sem skutečnou šířku scrollbaru místo konstanty 30
-  lwarea->setFixedWidth(GTImage::ThumbnailWidth + 30);
+  lwarea->setFixedWidth(Image::ThumbnailWidth + 30);
   layout->addWidget(lwarea);
   setLayout(layout);
 }
 
-void GTMainWidget::ensurePreviewButtonNotTristate(int state) {
+void MainWidget::ensurePreviewButtonNotTristate(int state) {
   if ((int)Qt::PartiallyChecked != state)
     toggleTransformBox->setTristate(false);
 }
 
-void GTMainWidget::setPreviewButton(int qtCheckStatus) {
+void MainWidget::setPreviewButton(int qtCheckStatus) {
   toggleTransformBox->setCheckState((Qt::CheckState) qtCheckStatus);
   if (qtCheckStatus != (int)Qt::PartiallyChecked)
     toggleTransformBox->setTristate(false);
