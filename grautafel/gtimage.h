@@ -36,10 +36,11 @@ namespace GT {
     struct Settings {
       QRectF targetRect;
       QPagedPaintDevice::PageSize pageSize;
-      QSizeF pageSizeMM;
+      QSizeF pageSizeMM; // Skutečné rozměry, závislé na orientation
       QPageLayout::Orientation orientation;
-    };
+      static Settings defaultSettings(void);
 
+    };
   private:
     bool isOk_;
     CornersStatus cstat_;

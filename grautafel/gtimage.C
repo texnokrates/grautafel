@@ -2,6 +2,7 @@
 #include <QtDebug>
 #include <QImageReader>
 #include <QSize>
+#include <QPagedPaintDevice>
 
 using namespace GT;
 
@@ -209,4 +210,13 @@ QPointF Image::lastViewPoint(void) const {
 
 qreal Image::lastZoom(void) const {
   return lastZoom_;
+}
+
+Image::Settings Image::Settings::defaultSettings() {
+  Image::Settings s;
+  s.pageSize = QPagedPaintDevice::A4;
+  s.orientation = QPageLayout::Landscape;
+  s.pageSizeMM = QSizeF(297,210);
+  s.targetRect = QRectF(13.7, 15, 270, 180);
+  return s;
 }

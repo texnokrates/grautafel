@@ -9,6 +9,7 @@ class QLabel;
 
 namespace GT {
   class Image;
+
   class ImageItem : public QFrame {
     Q_OBJECT
     Image *img_;
