@@ -207,16 +207,18 @@ void PageDialog::updateRectHeight(double h) {
 }
 
 void PageDialog::updateRectTop(double y) {
-  opt.targetRect.setY(y);
+  opt.targetRect.moveTop(y);
   updateLabelVals();
 }
 
 void PageDialog::updateRectLeft(double x) {
-  opt.targetRect.setX(x);
+  opt.targetRect.moveLeft(x);
   updateLabelVals();
 }
 
+#include <QDebug>
 void PageDialog::verticalCenter() {
+  qDebug() << "targetRect == " << opt.targetRect << endl << opt.pageSizeMM;
   topMarginBox->setValue((opt.pageSizeMM.height() - opt.targetRect.height())/2);
 }
 
@@ -228,9 +230,12 @@ void PageDialog::horisontalCenter() {
  * \brief Upraví hodnoty rozměrů papíru při výběru jiného formátu
  */
 void PageDialog::updateFormat(int newindex) {
-  if (formatModel_->listedSizes()->value(newindex) == QPageSize::Custom)
-    return;
+  if (formatModel_->listedSizes()->value(newindex) == QPageSize::Custom){
+      opt.pageSize = static_cast<QPagedPaintDevice::PageSize>(QPageSize::Custom);
+      return;
+  }
 
+  opt.pageSize = static_cast<QPagedPaintDevice::PageSize>(formatModel_->data(formatModel_->index(newindex, 0)).toInt());
   double w = formatModel_->data(formatModel_->index(newindex, 2)).toDouble();
   double h = formatModel_->data(formatModel_->index(newindex, 3)).toDouble();
   if (opt.orientation == QPageLayout::Landscape) {
