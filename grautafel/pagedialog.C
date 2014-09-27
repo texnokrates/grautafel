@@ -63,6 +63,7 @@ QVariant PageFormatModel::data(const QModelIndex &index, int role) const
 
 PageDialog::PageDialog(Image::PageSettings &o, QWidget *parent) :
   QDialog(parent), opt(o) {
+  setWindowTitle(trUtf8("Geometry settings"));
     paperFormatBox = new QComboBox();
     paperFormatBox->setEditable(false);
     formatModel_ = new PageFormatModel(this);

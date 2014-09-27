@@ -39,3 +39,5 @@ HEADERS  += mainwindow.h \
     gtconvolutionkernel.h
 
 FORMS    += mainwindow.ui
+
+TRANSLATIONS += grautafel_cs.ts

@@ -211,6 +211,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 //    testfun(this);
 //    ui->setupUi(this);
+  setWindowTitle(trUtf8("Grautafel"));
   setCentralWidget(new MainWidget());
 
 }
