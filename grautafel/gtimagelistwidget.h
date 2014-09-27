@@ -6,9 +6,9 @@ class QVBoxLayout;
 #include <QList>
 class QLabel;
 #include <QAction>
+#include "gtimage.h"
 
 namespace GT {
-  class Image;
 
   class ImageItem : public QFrame {
     Q_OBJECT
@@ -18,7 +18,9 @@ namespace GT {
 //  QLabel *nameLine_;
 
   public:
-    explicit ImageItem(const QString &srcname, QWidget *parent = 0);
+    explicit ImageItem(const QString &srcname, QWidget *parent = 0, const Image::PageSettings &settings = Image::PageSettings::defaultSettings() /*{QRectF(13.5, 15, 270,180),
+                                                                              QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape
+                                                                             }*/);
     Image *image(void) const {
       return img_;
     }
@@ -41,6 +43,7 @@ namespace GT {
     QVBoxLayout * layout;
     QList <ImageItem *> items; // Nutné kvůli mazání a přehazování
     ImageItem *selected;
+    Image::PageSettings defaultSettings;
   public:
     bool deleteItem(ImageItem *it);
     bool addItem(const QString & filename);
@@ -61,6 +64,7 @@ namespace GT {
     void emptied(void);
 
   public slots:
+    void pageSetup(void);
     void selectImage(ImageItem *);
     void moveSelectedUp(void);
     void moveSelectedDown(void);

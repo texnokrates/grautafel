@@ -1,7 +1,7 @@
 #ifndef GTMAINWIDGET_H
 #define GTMAINWIDGET_H
-#include <gtimagelistwidget.h>
-#include <gtimageview.h>
+#include "gtimagelistwidget.h"
+#include "gtimageview.h"
 class QCheckBox;
 #include <QWidget>
 

@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
-#include <gtimageview.h>
+#include "gtimageview.h"
 
 // Chci to předělat na QToolBar?
 

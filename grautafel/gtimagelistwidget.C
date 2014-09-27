@@ -1,17 +1,18 @@
 #include "gtimagelistwidget.h"
 #include <QDebug>
 #include <QFileDialog>
-#include <gtimage.h>
+#include "gtimage.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QAction>
+#include "pagedialog.h"
 
 using namespace GT;
 
-ImageItem::ImageItem(const QString &srcname, QWidget *parent) :
+ImageItem::ImageItem(const QString &srcname, QWidget *parent, const Image::PageSettings & opt) :
   QFrame(parent) {
   const int ls = 3;
-  img_ = new Image(srcname, this);
+  img_ = new Image(srcname, this, opt);
   thumbnail_ = new QLabel;
   thumbnail_->setPixmap(img_->thumbnail());
   layout_ = new QVBoxLayout();
@@ -47,6 +48,10 @@ void ImageItem::unselect() {
 
 ImageListWidget::ImageListWidget(QWidget *parent) :
   QWidget(parent) {
+  defaultSettings = {QRectF(13.5, 15, 270,180),
+                     QPagedPaintDevice::A4,
+                     QSizeF(297,210),
+                     QPageLayout::Landscape};
   layout = new QVBoxLayout;
   setLayout(layout);
   selected = 0;
@@ -67,7 +72,7 @@ ImageListWidget::ImageListWidget(QWidget *parent) :
 }
 
 bool ImageListWidget::addItem(const QString & filename) {
-  ImageItem *item = new ImageItem(filename);
+  ImageItem *item = new ImageItem(filename, 0, defaultSettings);
   if(!item->image()->isOk()) {
     delete item;
     return false;
@@ -141,3 +146,16 @@ void ImageListWidget::selectImage(ImageItem *item) {
   emit selectedImage(selected->image());
 }
 
+void ImageListWidget::pageSetup(void) {
+  Image::PageSettings opt = defaultSettings;
+  PageDialog dialog(opt, this);
+  // FIXME / TODO rozlišovat rozsah aplikace (nové/současná/vše)
+  // Momentálně vše.
+  if (QDialog::Accepted == dialog.exec()) {
+      defaultSettings = opt;
+      // Aplikace na vše
+      for (QList<ImageItem *>::Iterator i = items.begin(); i != items.end(); i++) {
+          (*i)->image()->setPageSettings(opt);
+        }
+    }
+}

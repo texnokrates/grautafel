@@ -6,7 +6,7 @@
 
 using namespace GT;
 
-Image::Image(const QString &fn, QObject *parent, const struct Settings &settings) {
+Image::Image(const QString &fn, QObject *parent, const struct PageSettings &settings) {
   isOk_ = true;
   setSrcFilename(fn);
   QImageReader reader(fn);
@@ -31,6 +31,10 @@ Image::Image(const QString &fn, QObject *parent, const struct Settings &settings
 
   setLastZoom(0);
 
+}
+
+void Image::setPageSettings(PageSettings &s) {
+  settings_ = s;
 }
 
 int Image::srcWidth() {
@@ -212,8 +216,8 @@ qreal Image::lastZoom(void) const {
   return lastZoom_;
 }
 
-Image::Settings Image::Settings::defaultSettings() {
-  Image::Settings s;
+Image::PageSettings Image::PageSettings::defaultSettings() {
+  Image::PageSettings s;
   s.pageSize = QPagedPaintDevice::A4;
   s.orientation = QPageLayout::Landscape;
   s.pageSizeMM = QSizeF(297,210);

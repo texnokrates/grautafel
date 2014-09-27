@@ -6,7 +6,8 @@
 #include <QLabel>
 #include <QHash>
 #include <QGridLayout>
-#include <gtimage.h>
+#include "gtimage.h"
+#include <QDialogButtonBox>
 
 using namespace GT;
 
@@ -60,7 +61,7 @@ QVariant PageFormatModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-PageDialog::PageDialog(Image::Settings &o, QWidget *parent) :
+PageDialog::PageDialog(Image::PageSettings &o, QWidget *parent) :
   QDialog(parent), opt(o) {
     paperFormatBox = new QComboBox();
     paperFormatBox->setEditable(false);
@@ -153,6 +154,12 @@ PageDialog::PageDialog(Image::Settings &o, QWidget *parent) :
 
     layout->addWidget(new QLabel(trUtf8("Bottom Margin")), 7, 0);
     layout->addWidget(bottomMarginLabel, 7, 1);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                     | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(buttonBox, 8, 0, 1, -1);
 
     setLayout(layout);
 
@@ -263,4 +270,7 @@ void PageDialog::updateOrientation(bool isLandscape) {
   updateLabelVals();
 }
 
+void PageDialog::setPageSizeCustom() {
+  paperFormatBox->setCurrentIndex(formatModel_->listedSizes()->indexOf(QPageSize::Custom));
+}
 

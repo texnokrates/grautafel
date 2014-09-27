@@ -4,7 +4,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QScrollArea>
-#include <gtimage.h>
+#include "gtimage.h"
 #include <viewzoomwidget.h>
 
 using namespace GT;
@@ -20,6 +20,7 @@ MainWidget::MainWidget(QWidget *parent) :
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox = new QCheckBox(trUtf8("Preview"));
   ZoomWidget *zoomWidget = new ZoomWidget(view);
+  QPushButton *pageSetupButton = new QPushButton(trUtf8("Page Setup..."));
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -28,6 +29,7 @@ MainWidget::MainWidget(QWidget *parent) :
   bwl->addWidget(deleteButton);
   bwl->addWidget(toggleTransformBox);
   bwl->addWidget(zoomWidget);
+  bwl->addWidget(pageSetupButton);
   QWidget *buttonWidget = new QWidget;
   buttonWidget->setLayout(bwl);
 
@@ -50,6 +52,8 @@ MainWidget::MainWidget(QWidget *parent) :
                    this, SLOT(ensurePreviewButtonNotTristate(int)));
   QObject::connect(view, SIGNAL(newPreviewState(int)),
                    this, SLOT(setPreviewButton(int)));
+  QObject::connect(pageSetupButton, SIGNAL(clicked()),
+                   listWidget, SLOT(pageSetup()));
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;

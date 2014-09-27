@@ -33,12 +33,12 @@ namespace GT {
 //      Fast = 0x1;
 //      Full = 0x2;
 //    };
-    struct Settings {
+    struct PageSettings {
       QRectF targetRect;
       QPagedPaintDevice::PageSize pageSize;
       QSizeF pageSizeMM; // Skutečné rozměry, závislé na orientation
       QPageLayout::Orientation orientation;
-      static Settings defaultSettings(void);
+      static PageSettings defaultSettings(void);
 
     };
   private:
@@ -54,19 +54,21 @@ namespace GT {
     QRectF targetRect_;
     qreal lastZoom_;
     QPointF lastViewPoint_;
-    struct Settings settings_;
+    struct PageSettings settings_;
     //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
   public:
+    void setPageSettings(PageSettings &);
     void setLastViewPoint(const QPointF &where);
     void setLastZoom(qreal zoom);
     QPointF lastViewPoint(void) const;
     qreal lastZoom(void) const;
 
+
     explicit Image(QObject *parent = 0);
-    Image(const QString &fn, QObject *parent = 0, const Settings &settings = {QRectF(13.5, 15, 270,180),
+    Image(const QString &fn, QObject *parent = 0, const PageSettings &settings = {QRectF(13.5, 15, 270,180),
                                                                               QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape
                                                                              });
     void setSrcFilename(const QString &fn) {

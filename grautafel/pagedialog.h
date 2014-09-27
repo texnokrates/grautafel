@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QMap>
 #include <QString>
-#include <gtimage.h>
+#include "gtimage.h"
 #include <QAbstractTableModel>
 #include <QPageSize>
 class QComboBox;
@@ -33,10 +33,10 @@ private:
   class PageDialog : public QDialog {
     Q_OBJECT
   public:
-    explicit PageDialog(Image::Settings &opt,  QWidget *parent = 0);
+    explicit PageDialog(Image::PageSettings &opt,  QWidget *parent = 0);
 
   private:
-    Image::Settings &opt;
+    Image::PageSettings &opt;
 
     PageFormatModel *formatModel_;
 

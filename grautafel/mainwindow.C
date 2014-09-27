@@ -14,10 +14,10 @@
 #include <QRect>
 #include <QPalette>
 #include <QVBoxLayout>
-#include <gthoughtransform.h>
+#include "gthoughtransform.h"
 #include <QGraphicsScene>
-#include <gtimageview.h>
-#include <gtimagelistwidget.h>
+#include "gtimageview.h"
+#include "gtimagelistwidget.h"
 
 #include <QDir>
 #include <QDebug>
