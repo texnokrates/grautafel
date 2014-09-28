@@ -251,8 +251,13 @@ QImage Image::targetImage()  {
 
   qDebug() << "transform scale factor:" << trfactor;
 
+  QRect cutFrame(trfactor * (targetRect().x() - transformDelta().x()),
+                 trfactor * (targetRect().y() - transformDelta().y()),
+                 trfactor * targetRect().width(),
+                 trfactor * targetRect().height());
   //FIXME nutno ještě naškálovat (pro správné rozlišení) a ořezat:
   QImage transformed = src_.transformed(transform(trfactor), Qt::SmoothTransformation);
+  transformed = transformed.copy(cutFrame);
   transformed.save("/tmp/debug.png");  // TODO odstranit
   checkSrcUnload();
   return transformed;
