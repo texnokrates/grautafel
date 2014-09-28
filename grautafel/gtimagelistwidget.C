@@ -173,6 +173,7 @@ bool ImageListWidget::writePdf(QString &target) {
   w.setPageSizeMM(items_[0]->image()->pageSettings().pageSizeMM);
   w.setCreator(trUtf8("Grautafel"));
   QPainter painter(&w);
+  painter.scale(w.width()/w.widthMM(), w.height()/w.heightMM());
   for (QList<ImageItem *>::ConstIterator i = items_.constBegin(); i != items_.constEnd(); i++) {
     Image *gtimg = (*i)->image();
 
@@ -196,6 +197,10 @@ bool ImageListWidget::writePdf(QString &target) {
 
 void ImageListWidget::writePdf(void) {
   QString filename = QFileDialog::getSaveFileName(this, trUtf8("Save PDF"), QString(), "PDF documents (*.pdf)");
+  if(filename.isNull()) {
+      qDebug() << trUtf8("PDF write cancelled.");
+      return;
+    }
   if(!writePdf(filename))
     qCritical() << trUtf8("Failed to write PDF."); //FIXME překlady
 }

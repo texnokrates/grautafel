@@ -18,9 +18,8 @@ namespace GT {
 //  QLabel *nameLine_;
 
   public:
-    explicit ImageItem(const QString &srcname, QWidget *parent = 0, const Image::PageSettings &settings = Image::PageSettings::defaultSettings() /*{QRectF(13.5, 15, 270,180),
-                                                                              QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape
-                                                                             }*/);
+    explicit ImageItem(const QString &srcname, QWidget *parent = 0,
+          const Image::PageSettings &settings = Image::PageSettings::defaultSettings());
     Image *image(void) const {
       return img_;
     }

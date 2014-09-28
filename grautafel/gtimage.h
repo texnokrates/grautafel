@@ -91,7 +91,9 @@ namespace GT {
       return bs;
     }
     QTransform transform(void);
+    QTransform transform(qreal unitScaling);
     QPointF transformDelta(void);
+    QPointF transformDelta(qreal unitScaling);
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
 //    //! Locates the board using the spiral algorithm.

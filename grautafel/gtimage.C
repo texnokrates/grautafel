@@ -203,6 +203,14 @@ QTransform Image::transform() {
   return tr;
 }
 
+QTransform Image::transform(qreal unitScaling) {
+  QTransform t = transform();
+  //qDebug() << "orig.  tf" << t << "scaling: " << unitScaling;
+  t = t * QTransform::fromScale(unitScaling, unitScaling);
+  //qDebug() << "scaled tf" << t;
+  return t;
+}
+
 void Image::setLastViewPoint(const QPointF &where) {
   lastViewPoint_ = where;
 }
@@ -224,14 +232,27 @@ Image::PageSettings Image::PageSettings::defaultSettings() {
   s.pageSize = QPagedPaintDevice::A4;
   s.orientation = QPageLayout::Landscape;
   s.pageSizeMM = QSizeF(297,210);
-  s.targetRect = QRectF(13.7, 15, 270, 180);
+  s.targetRect = QRectF(13.5, 15, 270, 180);
   return s;
 }
 
 QImage Image::targetImage()  {
   if (!checkSrcLoad()) return QImage();
+
+  // Výpočet "přirozeného" rozlišení jako délky nejdelší strany na původním obrázku
+  qreal whratio = targetSize().width() / targetSize().height();
+  qreal max = 0;
+  for (int i = 0; i < 4; i++) {
+      qreal l = QLineF(corners_[i], corners_[(i+1) % 4]).length();
+      if (1 == i % 2) l *= whratio;
+      if (l > max) max = l;
+  }
+  qreal trfactor = max / targetSize().width(); // Tímto přenásobíme transformace, abychom dosáhli rozumného rozlišení
+
+  qDebug() << "transform scale factor:" << trfactor;
+
   //FIXME nutno ještě naškálovat (pro správné rozlišení) a ořezat:
-  QImage transformed = src_.transformed(transform(), Qt::SmoothTransformation);
+  QImage transformed = src_.transformed(transform(trfactor), Qt::SmoothTransformation);
   transformed.save("/tmp/debug.png");  // TODO odstranit
   checkSrcUnload();
   return transformed;
@@ -242,7 +263,7 @@ const Image::PageSettings &Image::pageSettings() {
 }
 
 /*!
- * \brief Calculates the shift between transform() and its QImage::trueMatrix.
+ * \brief Calculates the shift between transform() and its QImage::trueMatrix().
  * This is needed as a workaround for clipping the image correctly
  *
  * \return A vector which shifts the top left corner of the board back to origin.
@@ -253,4 +274,8 @@ QPointF Image::transformDelta() {
   const QRect mapped = matrix.mapRect(rect).toAlignedRect();
   const QPoint delta = mapped.topLeft();
   return delta;
+}
+
+QPointF Image::transformDelta(qreal unitScaling) {
+  return transformDelta() * unitScaling;
 }
