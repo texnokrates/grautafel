@@ -8,7 +8,7 @@ class QCheckBox;
 namespace GT {
   class MainWidget : public QWidget {
     Q_OBJECT
-    QCheckBox *toggleTransformBox;
+    QCheckBox *toggleTransformBox_;
   public:
     explicit MainWidget(QWidget *parent = 0);
     ImageListWidget *listWidget;

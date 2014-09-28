@@ -15,21 +15,20 @@ class QLabel;
 namespace GT {
 
   // Auxilliary class for the page format combobox
-class PageFormatModel : public QAbstractTableModel
-{
+  class PageFormatModel : public QAbstractTableModel {
     Q_OBJECT
-public:
+  public:
     PageFormatModel(QObject *parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const ;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     int defaultRowIndex(void);
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     const QList<QPageSize::PageSizeId> *listedSizes(void) const;
-private:
-    QList<QPageSize::PageSizeId> formatList;
-};
+  private:
+    QList<QPageSize::PageSizeId> formatList_;
+  };
 
-  
+
   class PageDialog : public QDialog {
     Q_OBJECT
   public:
@@ -47,7 +46,7 @@ private:
     QDoubleSpinBox *topMarginBox, *leftMarginBox;
     QDoubleSpinBox *rectHeightBox, *rectWidthBox;
     QLabel *widthHeightRatioLabel, *rightMarginLabel,
-        *bottomMarginLabel;
+           *bottomMarginLabel;
   signals:
 
   public slots:

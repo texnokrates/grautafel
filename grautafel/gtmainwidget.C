@@ -18,7 +18,7 @@ MainWidget::MainWidget(QWidget *parent) :
   QPushButton *downButton = new QPushButton(trUtf8("Move down"));
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
-  toggleTransformBox = new QCheckBox(trUtf8("Preview"));
+  toggleTransformBox_ = new QCheckBox(trUtf8("Preview"));
   ZoomWidget *zoomWidget = new ZoomWidget(view);
   QPushButton *pageSetupButton = new QPushButton(trUtf8("Page Setup..."));
   QPushButton *writePdfButton = new QPushButton(trUtf8("Write PDF..."));
@@ -29,7 +29,7 @@ MainWidget::MainWidget(QWidget *parent) :
   bwl->addWidget(upButton);
   bwl->addWidget(downButton);
   bwl->addWidget(deleteButton);
-  bwl->addWidget(toggleTransformBox);
+  bwl->addWidget(toggleTransformBox_);
   bwl->addWidget(zoomWidget);
   bwl->addWidget(pageSetupButton);
   bwl->addWidget(writePdfButton);
@@ -49,9 +49,9 @@ MainWidget::MainWidget(QWidget *parent) :
                    listWidget->moveDownAction, SLOT(trigger()));
   QObject::connect(deleteButton, SIGNAL(clicked()),
                    listWidget->deleteAction, SLOT(trigger()));
-  QObject::connect(toggleTransformBox, SIGNAL(stateChanged(int)),
+  QObject::connect(toggleTransformBox_, SIGNAL(stateChanged(int)),
                    view, SLOT(setPreview(int)));
-  QObject::connect(toggleTransformBox, SIGNAL(stateChanged(int)),
+  QObject::connect(toggleTransformBox_, SIGNAL(stateChanged(int)),
                    this, SLOT(ensurePreviewButtonNotTristate(int)));
   QObject::connect(view, SIGNAL(newPreviewState(int)),
                    this, SLOT(setPreviewButton(int)));
@@ -77,11 +77,11 @@ MainWidget::MainWidget(QWidget *parent) :
 
 void MainWidget::ensurePreviewButtonNotTristate(int state) {
   if ((int)Qt::PartiallyChecked != state)
-    toggleTransformBox->setTristate(false);
+    toggleTransformBox_->setTristate(false);
 }
 
 void MainWidget::setPreviewButton(int qtCheckStatus) {
-  toggleTransformBox->setCheckState((Qt::CheckState) qtCheckStatus);
+  toggleTransformBox_->setCheckState((Qt::CheckState) qtCheckStatus);
   if (qtCheckStatus != (int)Qt::PartiallyChecked)
-    toggleTransformBox->setTristate(false);
+    toggleTransformBox_->setTristate(false);
 }

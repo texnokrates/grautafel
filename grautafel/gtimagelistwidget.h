@@ -40,10 +40,10 @@ namespace GT {
 
   class ImageListWidget : public QWidget {
     Q_OBJECT
-    QVBoxLayout * layout;
-    QList <ImageItem *> items; // Nutné kvůli mazání a přehazování
-    ImageItem *selected;
-    Image::PageSettings defaultSettings;
+    QVBoxLayout * layout_;
+    QList <ImageItem *> items_; // Nutné kvůli mazání a přehazování
+    ImageItem *selected_;
+    Image::PageSettings defaultSettings_;
   public:
     bool deleteItem(ImageItem *it);
     bool addItem(const QString & filename);

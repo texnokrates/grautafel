@@ -69,9 +69,7 @@ namespace GT {
 
 
     explicit Image(QObject *parent = 0);
-    Image(const QString &fn, QObject *parent = 0, const PageSettings &settings = {QRectF(13.5, 15, 270,180),
-                                                                              QPagedPaintDevice::A4, QSizeF(297,210), QPageLayout::Landscape
-                                                                             });
+    Image(const QString &fn, QObject *parent = 0, const PageSettings &settings = PageSettings::defaultSettings());
     void setSrcFilename(const QString &fn) {
       srcFilename_ = fn;
     }
