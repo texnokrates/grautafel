@@ -198,7 +198,8 @@ QTransform Image::transform() {
   if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)) {
     qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
   }
-  qDebug() << tr;
+  qDebug() << "Orig. tf: " << tr;
+  qDebug() << "Real  tf: " << QImage::trueMatrix(tr, size_.width(), size_.height());
   return tr;
 }
 
@@ -231,10 +232,25 @@ QImage Image::targetImage()  {
   if (!checkSrcLoad()) return QImage();
   //FIXME nutno ještě naškálovat (pro správné rozlišení) a ořezat:
   QImage transformed = src_.transformed(transform(), Qt::SmoothTransformation);
+  transformed.save("/tmp/debug.png");  // TODO odstranit
   checkSrcUnload();
   return transformed;
 }
 
 const Image::PageSettings &Image::pageSettings() {
   return settings_;
+}
+
+/*!
+ * \brief Calculates the shift between transform() and its QImage::trueMatrix.
+ * This is needed as a workaround for clipping the image correctly
+ *
+ * \return A vector which shifts the top left corner of the board back to origin.
+ */
+QPointF Image::transformDelta() {
+  const QTransform matrix = transform();
+  const QRectF rect(0, 0, size_.width(), size_.height());
+  const QRect mapped = matrix.mapRect(rect).toAlignedRect();
+  const QPoint delta = mapped.topLeft();
+  return delta;
 }
