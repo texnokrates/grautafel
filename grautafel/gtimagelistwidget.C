@@ -6,6 +6,9 @@
 #include <QLabel>
 #include <QAction>
 #include "pagedialog.h"
+#include <QPdfWriter>
+#include <QPainter>
+#include <QErrorMessage>
 
 using namespace GT;
 
@@ -59,6 +62,8 @@ ImageListWidget::ImageListWidget(QWidget *parent) :
   moveUpAction = new QAction(trUtf8("Move &up"), this);
   moveDownAction = new QAction(trUtf8("Move &down"), this);
   deleteAction = new QAction(trUtf8("D&elete"), this);
+  writePdfAction = new QAction(trUtf8("&Write PDF"), this);
+  pageSetupAction = new QAction(trUtf8("&Page Settings"), this);
 
   connect(openAction, SIGNAL(triggered()),
           this, SLOT(startOpenDialog()));
@@ -68,6 +73,10 @@ ImageListWidget::ImageListWidget(QWidget *parent) :
           this, SLOT(moveSelectedDown()));
   connect(deleteAction, SIGNAL(triggered()),
           this, SLOT(deleteSelected()));
+  connect(writePdfAction, SIGNAL(triggered()),
+          this, SLOT(writePdf()));
+  connect(pageSetupAction, SIGNAL(triggered()),
+          this, SLOT(pageSetup()));
   setMinimumWidth(Image::ThumbnailWidth+6);
 }
 
@@ -158,4 +167,38 @@ void ImageListWidget::pageSetup(void) {
           (*i)->image()->setPageSettings(opt);
         }
     }
+}
+
+bool ImageListWidget::writePdf(QString &target) {
+  QPdfWriter w(target);
+  /* První stránku nutno nastavit ještě před konstrukcí QPainter */
+  w.setPageSize(items[0]->image()->pageSettings().pageSize);
+  w.setPageSizeMM(items[0]->image()->pageSettings().pageSizeMM);
+  w.setCreator(trUtf8("Grautafel"));
+  QPainter painter(&w);
+  for (QList<ImageItem *>::ConstIterator i = items.constBegin(); i != items.constEnd(); i++) {
+      Image *gtimg = (*i)->image();
+
+      w.setPageSize(gtimg->pageSettings().pageSize);
+      w.setPageSizeMM(gtimg->pageSettings().pageSizeMM);
+      if (i != items.constBegin()) if(!w.newPage()) {
+          qCritical() << trUtf8("Failed creating new page.");
+          return false;
+        }
+
+      QImage transformed = gtimg->targetImage();
+      if(transformed.isNull()) {
+          qCritical() << trUtf8("Transformed image is null.");
+          return false;
+        }
+
+      painter.drawImage(gtimg->targetRect(), transformed);
+    }
+  return true;
+}
+
+void ImageListWidget::writePdf(void) {
+  QString filename = QFileDialog::getSaveFileName(this, trUtf8("Save PDF"), QString(), "PDF documents (*.pdf)");
+  if(!writePdf(filename))
+    qCritical() << trUtf8("Failed to write PDF."); //FIXME překlady
 }

@@ -53,7 +53,10 @@ namespace GT {
     QAction *moveUpAction;
     QAction *moveDownAction;
     QAction *deleteAction;
+    QAction *writePdfAction;
+    QAction *pageSetupAction;
 
+    bool writePdf(QString &target);
 
 
   public:
@@ -70,6 +73,7 @@ namespace GT {
     void moveSelectedDown(void);
     void startOpenDialog(void);
     void deleteSelected(void);
+    void writePdf(void);
 
   };
 }

@@ -16,7 +16,7 @@ namespace GT {
   signals:
 
   public slots:
-    void ensurePreviewButtonNotTristate(int);
+    void ensurePreviewButtonNotTristate(int); // Ošklivý hack pro správné chování checkboxu
     void setPreviewButton(int); // int je Qt::CheckStatus
   };
 }

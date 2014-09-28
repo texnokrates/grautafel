@@ -101,9 +101,11 @@ QPolygon GTImage::findRectangle(int diam, qreal medianThreshold) {
 }
 #endif
 
+#if 0
 QPolygon Image::findRectangleSpiral(qreal relativeMedianThreshold) {
 
 }
+#endif
 
 //void GTImage::makeThumbnail() {
 //  checkSrcLoad();
@@ -223,4 +225,16 @@ Image::PageSettings Image::PageSettings::defaultSettings() {
   s.pageSizeMM = QSizeF(297,210);
   s.targetRect = QRectF(13.7, 15, 270, 180);
   return s;
+}
+
+QImage Image::targetImage()  {
+  if (!checkSrcLoad()) return QImage();
+  //FIXME nutno ještě naškálovat (pro správné rozlišení) a ořezat:
+  QImage transformed = src_.transformed(transform(), Qt::SmoothTransformation);
+  checkSrcUnload();
+  return transformed;
+}
+
+const Image::PageSettings &Image::pageSettings() {
+  return settings_;
 }

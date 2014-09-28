@@ -21,6 +21,8 @@ MainWidget::MainWidget(QWidget *parent) :
   toggleTransformBox = new QCheckBox(trUtf8("Preview"));
   ZoomWidget *zoomWidget = new ZoomWidget(view);
   QPushButton *pageSetupButton = new QPushButton(trUtf8("Page Setup..."));
+  QPushButton *writePdfButton = new QPushButton(trUtf8("Write PDF..."));
+
 
   QVBoxLayout *bwl = new QVBoxLayout;
   bwl->addWidget(openButton);
@@ -30,6 +32,7 @@ MainWidget::MainWidget(QWidget *parent) :
   bwl->addWidget(toggleTransformBox);
   bwl->addWidget(zoomWidget);
   bwl->addWidget(pageSetupButton);
+  bwl->addWidget(writePdfButton);
   QWidget *buttonWidget = new QWidget;
   buttonWidget->setLayout(bwl);
 
@@ -53,7 +56,10 @@ MainWidget::MainWidget(QWidget *parent) :
   QObject::connect(view, SIGNAL(newPreviewState(int)),
                    this, SLOT(setPreviewButton(int)));
   QObject::connect(pageSetupButton, SIGNAL(clicked()),
-                   listWidget, SLOT(pageSetup()));
+                   listWidget->pageSetupAction, SLOT(trigger()));
+  QObject::connect(writePdfButton, SIGNAL(clicked()),
+                   listWidget->writePdfAction, SLOT(trigger()));
+
   // TODO naconnectit ostatní tlačítka
 
   QHBoxLayout *layout = new QHBoxLayout;

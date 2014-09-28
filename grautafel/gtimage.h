@@ -61,6 +61,7 @@ namespace GT {
     void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
   public:
     void setPageSettings(PageSettings &);
+    const PageSettings &pageSettings(void);
     void setLastViewPoint(const QPointF &where);
     void setLastZoom(qreal zoom);
     QPointF lastViewPoint(void) const;
@@ -81,6 +82,7 @@ namespace GT {
     QVector<QPointF> corners(void);
     bool setCorners(const QVector<QPointF> &corners);
     QImage srcImage(void);
+    QImage targetImage(void);
     int srcWidth();
     int srcHeight();
     bool isOk(void) const;
@@ -93,8 +95,8 @@ namespace GT {
     QTransform transform(void);
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
-    //! Locates the board using the spiral algorithm.
-    QPolygon findRectangleSpiral(qreal relativeMedianThreshold);
+//    //! Locates the board using the spiral algorithm.
+//    QPolygon findRectangleSpiral(qreal relativeMedianThreshold);
 
 
 //    static QColor getMedianColor(const QImage &img, const QRect &area);
