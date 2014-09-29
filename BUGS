@@ -1,4 +1,1 @@
 - Okraje neodpovídají skutečnosti / asymetrie (má to co do činění s nastavením okrajů v QPdfWriter?).
-- Je potřeba, aby se při spuštění zápisu do PDF ukládaly změny současného obrázku
-- Při vypnutí náhledu načítat původní obrázek?
-- Nastavení kotrastu je potřeba udělat jinak (aby se zachovávaly barvy). Mělo by se to chovat jako kanál Jas v GIMPu.

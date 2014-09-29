@@ -60,6 +60,8 @@ MainWidget::MainWidget(QWidget *parent) :
                    this, SLOT(setPreviewButton(int)));
   QObject::connect(pageSetupButton, SIGNAL(clicked()),
                    listWidget->pageSetupAction, SLOT(trigger()));
+  QObject::connect(writePdfButton, SIGNAL(clicked()), // Bez toho se úpravy posledního obrázku neprojeví v PDF
+                   view, SLOT(saveChanges()));
   QObject::connect(writePdfButton, SIGNAL(clicked()),
                    listWidget->writePdfAction, SLOT(trigger()));
   QObject::connect(colorWidget, SIGNAL(minChanged(QRgb)),

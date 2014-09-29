@@ -67,6 +67,7 @@ namespace GT {
     void setImage(Image *); // uloží změny a načte nový obrázek
     void updateLines(void); // Přepočte polohy hranic
     void clear(void);
+    void saveChanges(void); // uloží změny před přepnutím na další obrázek nebo při zahájení zápisu do PDF
 
     void setMinColor(QRgb);
     void setMaxColor(QRgb);
@@ -91,7 +92,6 @@ namespace GT {
     bool invertColors_;
     enum PreviewState previewState_;
     void saveAndEmitPreviewStateChange(enum PreviewState nps);
-    void saveChanges(void); // uloží změny před přepnutím na další obrázek
   };
 }
 #endif // GTIMAGEVIEW_H

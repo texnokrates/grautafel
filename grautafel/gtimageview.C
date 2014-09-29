@@ -232,6 +232,9 @@ void ImageView::original_(void) {
     setZoom(img_->lastZoom());
     centerOn(img_->lastViewPoint());
   }
+
+  if(img_ && (maxColor() != qRgb(255,255,255) || minColor() != qRgb(0,0,0)))
+    pixmapItem_->setPixmap(QPixmap::fromImage(img_->srcImage()));
   saveAndEmitPreviewStateChange(NotPreview);
 }
 
