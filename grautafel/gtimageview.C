@@ -76,7 +76,9 @@ void ImageView::setImage(Image *newimg) {
   saveChanges();
 
   img_ = newimg;
-  minValue_ =
+  minLightness_ = newimg->minLightness();
+  maxLightness_ = newimg->maxLightness();
+  invertColors_ = newimg->colorsInverted();
   setCorners(newimg->corners());
   saveAndEmitPreviewStateChange(NotPreview);
 
@@ -143,6 +145,9 @@ void ImageView::saveChanges() {
     img_->setCorners(corners());
     img_->setLastViewPoint(center());
     img_->setLastZoom(zoom());
+    img_->setMaxLightness(maxLightness());
+    img_->setMinLightness(minLightness());
+    img_->setColorsInverted(colorsInverted());
   }
 }
 
@@ -240,6 +245,8 @@ void ImageView::transformed_(void) {
     qreal oldZoom = zoom();
     QTransform qtt = quadToTarget();
     qreal qttScale = std::sqrt(qtt.determinant());
+    // FIXME neškálovat barvy při pouhé změně transformace
+    pixmapItem_->setPixmap(QPixmap::fromImage(img_->trimLightness(minLightness(), maxLightness(), colorsInverted())));
     setTransform(qtt * QTransform::fromScale(oldZoom/qttScale, oldZoom/qttScale));
     saveAndEmitPreviewStateChange(NewPreview);
   }
@@ -270,4 +277,23 @@ QTransform ImageView::quadToTarget() const {
     //qDebug() << tr;
     return tr;
   }
+}
+
+bool ImageView::colorsInverted() const {return invertColors_;}
+int ImageView::maxLightness() const {return maxLightness_;}
+int ImageView::minLightness() const {return minLightness_;}
+
+void ImageView::setMaxLightness(int l) {
+  maxLightness_ = l;
+  if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview);
+}
+
+void ImageView::setMinLightness(int l) {
+  minLightness_ = l;
+  if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview);
+}
+
+void ImageView::setColorsInverted(bool inv) {
+  invertColors_ = inv;
+  if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview);
 }

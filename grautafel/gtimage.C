@@ -29,6 +29,10 @@ Image::Image(const QString &fn, QObject *parent, const struct PageSettings &sett
 
   settings_ = settings;
 
+  maxLightness_ = 255;
+  minLightness_ = 0;
+  invertColors_ = false;
+
   setLastZoom(0);
 
 }
@@ -320,6 +324,7 @@ QImage Image::targetImage()  {
   transformed = transformed.copy(cutFrame);
   transformed.save("/tmp/debug.png");  // TODO odstranit
   checkSrcUnload();
+  transformed = trimLightness(transformed, minLightness(), maxLightness(), colorsInverted());
   return transformed;
 }
 

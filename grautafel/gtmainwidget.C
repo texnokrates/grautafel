@@ -5,7 +5,8 @@
 #include <QCheckBox>
 #include <QScrollArea>
 #include "gtimage.h"
-#include <viewzoomwidget.h>
+#include "viewzoomwidget.h"
+#include "colorwidget.h"
 
 using namespace GT;
 
@@ -19,6 +20,7 @@ MainWidget::MainWidget(QWidget *parent) :
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox_ = new QCheckBox(trUtf8("Preview"));
+  ColorWidget *colorWidget = new ColorWidget;
   ZoomWidget *zoomWidget = new ZoomWidget(view);
   QPushButton *pageSetupButton = new QPushButton(trUtf8("Page Setup..."));
   QPushButton *writePdfButton = new QPushButton(trUtf8("Write PDF..."));
@@ -30,6 +32,7 @@ MainWidget::MainWidget(QWidget *parent) :
   bwl->addWidget(downButton);
   bwl->addWidget(deleteButton);
   bwl->addWidget(toggleTransformBox_);
+  bwl->addWidget(colorWidget);
   bwl->addWidget(zoomWidget);
   bwl->addWidget(pageSetupButton);
   bwl->addWidget(writePdfButton);
@@ -59,6 +62,14 @@ MainWidget::MainWidget(QWidget *parent) :
                    listWidget->pageSetupAction, SLOT(trigger()));
   QObject::connect(writePdfButton, SIGNAL(clicked()),
                    listWidget->writePdfAction, SLOT(trigger()));
+  QObject::connect(colorWidget, SIGNAL(minChanged(int)),
+                   view, SLOT(setMinLightness(int)));
+  QObject::connect(colorWidget, SIGNAL(maxChanged(int)),
+                   view, SLOT(setMaxLightness(int)));
+  QObject::connect(colorWidget, SIGNAL(invertChanged(bool)),
+                   view, SLOT(setColorsInverted(bool)));
+  QObject::connect(listWidget, SIGNAL(selectedImage(Image*)),
+                   colorWidget, SLOT(reloadVals(Image*)));
 
   // TODO naconnectit ostatní tlačítka
 
