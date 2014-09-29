@@ -23,6 +23,11 @@ namespace GT {
   public:
     static const int ThumbnailWidth = 128;
     static const int ThumbnailHeight = 96;
+
+    // Konstanty pro odhady
+    const qreal lowerQuantileGuess = 0.02;
+    const qreal higherQuantileGuess = 0.2;
+
     enum CornersStatus {
       NotSet = 0x0,
       SetToSourceCornersAtLoad = 0x1,
@@ -43,6 +48,10 @@ namespace GT {
     };
 
   public:
+    Image(const QString &fn, QObject *parent = 0,
+          const PageSettings &settings = PageSettings::defaultSettings(),
+          bool guessColors = false, bool guessShape = false);
+
     void setPageSettings(PageSettings &);
     const PageSettings &pageSettings(void);
     void setLastViewPoint(const QPointF &where);
@@ -52,8 +61,6 @@ namespace GT {
     bool colorsInverted(void) const;
     void setColorsInverted(bool);
 
-    explicit Image(QObject *parent = 0);
-    Image(const QString &fn, QObject *parent = 0, const PageSettings &settings = PageSettings::defaultSettings());
     void setSrcFilename(const QString &fn) {
       srcFilename_ = fn;
     }

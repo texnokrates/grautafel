@@ -6,7 +6,15 @@
 
 using namespace GT;
 
-Image::Image(const QString &fn, QObject *parent, const struct PageSettings &settings) {
+QColor rgbInvert(QColor orig) {
+  int r, g, b;
+  orig.getRgb(&r, &g, &b);
+  return QColor(255-r, 255-g, 255-b);
+}
+
+Image::Image(const QString &fn, QObject *parent,
+             const struct PageSettings &settings,
+             bool guessColors, bool guessShape) {
   isOk_ = true;
   setSrcFilename(fn);
   QImageReader reader(fn);
@@ -20,19 +28,53 @@ Image::Image(const QString &fn, QObject *parent, const struct PageSettings &sett
     isOk_ = false;
     return;
   }
-  corners_ = QVector<QPointF>(4);
-  corners_[0] = QPointF(0,0);
-  corners_[1] = QPointF(size_.width(), 0);
-  corners_[2] = QPointF(size_.width(), size_.height());
-  corners_[3] = QPointF(0, size_.height());
-  cstat_ = SetToSourceCornersAtLoad;
 
   settings_ = settings;
 
-  maxColor_ = qRgb(255, 255, 255);
-  minColor_ = qRgb(0, 0, 0);
-  invertColors_ = false;
+  if (guessColors || guessShape)
+    checkSrcLoad();
 
+  if (false /*quessShape*/) {
+      ;//TODO
+  }
+  else {
+    corners_ = QVector<QPointF>(4);
+    corners_[0] = QPointF(0,0);
+    corners_[1] = QPointF(size_.width(), 0);
+    corners_[2] = QPointF(size_.width(), size_.height());
+    corners_[3] = QPointF(0, size_.height());
+    cstat_ = SetToSourceCornersAtLoad;
+  }
+
+  if (guessColors) {
+      QList<qreal> probs;
+      probs.append(lowerQuantileGuess);
+      probs.append(higherQuantileGuess);
+      probs.append(0.5);
+      probs.append(1. - higherQuantileGuess);
+      probs.append(1. - lowerQuantileGuess);
+      QList<QColor> quantiles = getColorQuantiles(
+            QRect(size_.width() / 4, size_.height() / 4,
+                  size_.width() / 2, size_.height() / 2),
+            probs);
+      if (quantiles[2].lightness() < 70) { // Tabule je tmavá, odhad vycucaný z prstu
+         setColorsInverted(true);
+         setMinColor(rgbInvert(quantiles[4]).rgb());
+         setMaxColor(rgbInvert(quantiles[3]).rgb());
+        }
+      else {
+          setMinColor(quantiles[0].rgb());
+          setMaxColor(quantiles[1].rgb());
+        }
+    }
+  else {
+    maxColor_ = qRgb(255, 255, 255);
+    minColor_ = qRgb(0, 0, 0);
+    invertColors_ = false;
+    }
+
+  if (guessColors || guessShape)
+    checkSrcUnload();
   setLastZoom(0);
 
 }
@@ -71,33 +113,93 @@ QColor GTImage::getMedianColor(const QImage &img, const QRect &area) {
 }
 #endif
 
-#if 0
-QVector<int> Image::getLightnessHistogram(const QImage &img, const QRect &area) {
-  QVector<int> hist(256);
+QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &probs) {
+  // FIXME zbytečně pomalé, lepší by byl trojitý bucketsort.
+  checkSrcLoad();
+  qDebug() << area;
+  // "QImage::pixel() is expensive when used for massive pixel manipulations."
+  QVector<int> hr(256), hg(256), hb(256); // histogram
   for(int i = 0; i < area.height(); i++) {
-    for (int j = 0; j < area.width(); i++) {
-      QRgb px = img.pixel(area.bottomLeft() + QPoint(j, i));
-      int l = QColor(px).lightness(); // tahle metoda je v Qt zbytečně nabobtnalá, možná to bude pomalé...
-      hist[l] = hist[l] + 1;
+      for (int j = 0; j < area.width(); j++) {
+          QRgb px = src_.pixel(area.topLeft() + QPoint(j, i));
+          hr[qRed(px)] += 1;
+          hg[qGreen(px)] += 1;
+          hb[qBlue(px)] += 1;
+        }
     }
-  }
-  return hist;
+  qreal rs = 0, gs = 0, bs = 0; // Celkové součty (vlastně zbytečné, mělo by dát velikost)
+  for (int i = 0; i < 256; i++) {
+      rs += hr[i];
+      gs += hg[i];
+      bs += hb[i];
+    }
+
+  QVector<qreal> rcdf(256), gcdf(256), bcdf(256); // Kumulativní součty
+  int rss = 0, gss = 0, bss = 0;
+  for (int i = 0; i < 256; i++) {
+      rss += hr[i];
+      gss += hg[i];
+      bss += hb[i];
+      rcdf[i] = rss / rs;
+      gcdf[i] = gss / gs;
+      bcdf[i] = bss / bs;
+    }
+//  qDebug() << rcdf;
+//  qDebug() << gcdf;
+//  qDebug() << bcdf;
+
+  QList<QColor> quantiles;
+  for (QList<qreal>::const_iterator p = probs.constBegin(); p != probs.constEnd(); p++) {
+      int r, g, b;
+      if (*p < rcdf[0]) {
+          r = 0;
+          goto endR;
+        }
+      for (int i = 1; i < 256; i++) {
+          qreal avg = (rcdf[i-1] + rcdf[i]) / 2.;
+          if (*p >= rcdf[i-1] && *p <= rcdf[i]) {
+            if (*p < avg) r = i-1;
+            else r = i;
+            goto endR;
+            }
+        }
+      r = 255;
+      endR:
+        if (*p < gcdf[0]) {
+          g = 0;
+          goto endG;
+        }
+      for (int i = 1; i < 256; i++) {
+          qreal avg = (gcdf[i-1] + gcdf[i]) / 2.;
+          if (*p >= gcdf[i-1] && *p <= gcdf[i]) {
+            if (*p < avg) g = i-1;
+            else g = i;
+            goto endG;
+            }
+        }
+      g = 255;
+      endG:
+      if (*p < bcdf[0]) {
+          b = 0;
+          goto endB;
+        }
+      for (int i = 1; i < 256; i++) {
+          qreal avg = (bcdf[i-1] + bcdf[i]) / 2.;
+          if (*p >= bcdf[i-1] && *p <= bcdf[i]) {
+            if (*p < avg) b = i-1;
+            else b = i;
+            goto endB;
+            }
+        }
+      b = 255;
+      endB:
+      quantiles.append(qRgb(r,g,b));
+    }
+  qDebug() << quantiles;
+  return quantiles;
 }
 
-QVector<int> Image::getLightnessHistogram(const QRect &area) {
-  checkSrcLoad();
-  QVector<int> hist = getLightnessHistogram(src_, area);
-  checkSrcUnload();
-  return hist;
-}
-
-QList<int> Image::getLightnessQuantiles(const QList<qreal> &probs, const QRect &area) {
-  checkSrcLoad();
-  QList<int> q = getLightnessQuantiles(src_, probs, area);
-  checkSrcUnload();
-  return q;
-}
-
+#if 0
 QList<int> Image::getLightnessQuantiles(const QImage &img, const QList<qreal> &probs, const QRect &area) {
   QVector<int> hist = getLightnessHistogram(img, area);
   qreal sum = 0;
@@ -129,31 +231,34 @@ nextp:
   }
   return quantiles;
 }
-#endif
-
-QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &quantiles) {
-  // FIXME zbytečně pomalé, lepší by byl trojitý bucketsort.
-  checkSrcLoad();
-  // "QImage::pixel() is expensive when used for massive pixel manipulations."
-  int len = area.width()*area.height();
-  QVector<int> r(len), g(len), b(len);
+QVector<int> Image::getLightnessHistogram(const QImage &img, const QRect &area) {
+  QVector<int> hist(256);
   for(int i = 0; i < area.height(); i++) {
-    for(int j = 0; j < area.width(); j++) {
-      QRgb px = src_.pixel(area.bottomLeft() + QPoint(j,i));
-      r[i*area.width()+j] = qRed(px);
-      g[i*area.width()+j] = qGreen(px);
-      b[i*area.width()+j] = qBlue(px);
+    for (int j = 0; j < area.width(); j++) {
+      QRgb px = img.pixel(area.bottomLeft() + QPoint(j, i));
+      int l = QColor(px).lightness(); // tahle metoda je v Qt zbytečně nabobtnalá, možná to bude pomalé...
+      hist[l] = hist[l] + 1;
     }
   }
-  qSort(r);
-  qSort(g);
-  qSort(b);
-  QList<QColor> qcols;
-
-  for (QList<qreal>::const_iterator i = quantiles.begin(); i != quantiles.end(); ++i)
-    qcols << QColor(r[(int)(len * (*i))],g[(int)(len * (*i))],b[(int)(len * (*i))]);
-  return qcols;
+  return hist;
 }
+
+QVector<int> Image::getLightnessHistogram(const QRect &area) {
+  checkSrcLoad();
+  QVector<int> hist = getLightnessHistogram(src_, area);
+  checkSrcUnload();
+  return hist;
+}
+
+QList<int> Image::getLightnessQuantiles(const QList<qreal> &probs, const QRect &area) {
+  checkSrcLoad();
+  QList<int> q = getLightnessQuantiles(src_, probs, area);
+  checkSrcUnload();
+  return q;
+}
+
+#endif
+
 
 #if 0
 #include <QPoint>

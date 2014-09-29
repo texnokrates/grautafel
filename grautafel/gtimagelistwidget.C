@@ -12,10 +12,11 @@
 
 using namespace GT;
 
-ImageItem::ImageItem(const QString &srcname, QWidget *parent, const Image::PageSettings & opt) :
+ImageItem::ImageItem(const QString &srcname, QWidget *parent, const Image::PageSettings & opt,
+                     bool guessColors, bool guessShape) :
   QFrame(parent) {
   const int ls = 3;
-  img_ = new Image(srcname, this, opt);
+  img_ = new Image(srcname, this, opt, guessColors, guessShape);
   thumbnail_ = new QLabel;
   thumbnail_->setPixmap(img_->thumbnail());
   layout_ = new QVBoxLayout();

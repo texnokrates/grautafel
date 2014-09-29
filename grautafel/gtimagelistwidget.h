@@ -15,7 +15,8 @@ namespace GT {
 
   public:
     explicit ImageItem(const QString &srcname, QWidget *parent = 0,
-          const Image::PageSettings &settings = Image::PageSettings::defaultSettings());
+          const Image::PageSettings &settings = Image::PageSettings::defaultSettings(),
+                       bool guessColors = true, bool guessShape = false); // FIXME výchozí hodnoty
     Image *image(void) const;
     void drawSelected(void);
     void drawUnselected(void);
