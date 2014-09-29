@@ -67,7 +67,67 @@ QColor GTImage::getMedianColor(const QImage &img, const QRect &area) {
 }
 #endif
 
+QVector<int> Image::getLightnessHistogram(const QImage &img, const QRect &area) {
+  QVector<int> hist(256);
+  for(int i = 0; i < area.height(); i++) {
+    for (int j = 0; j < area.width(); i++) {
+      QRgb px = img.pixel(area.bottomLeft() + QPoint(j, i));
+      int l = QColor(px).lightness(); // tahle metoda je v Qt zbytečně nabobtnalá, možná to bude pomalé...
+      hist[l] = hist[l] + 1;
+    }
+  }
+  return hist;
+}
+
+QVector<int> Image::getLightnessHistogram(const QRect &area) {
+  checkSrcLoad();
+  QVector<int> hist = getLightnessHistogram(src_, area);
+  checkSrcUnload();
+  return hist;
+}
+
+QList<int> Image::getLightnessQuantiles(const QList<qreal> &probs, const QRect &area) {
+  checkSrcLoad();
+  QList<int> q = getLightnessQuantiles(src_, probs, area);
+  checkSrcUnload();
+  return q;
+}
+
+QList<int> Image::getLightnessQuantiles(const QImage &img, const QList<qreal> &probs, const QRect &area) {
+  QVector<int> hist = getLightnessHistogram(img, area);
+  qreal sum = 0;
+  for (int i = 0; i < 256; i++) sum += hist[i];
+  qreal cdf[256];
+  {
+    int ss;
+    for (int i = 0; i < 256; i++) {
+      ss += hist[i];
+      cdf[i] = ss / sum;
+    }
+  }
+  QList<int> quantiles;
+  for (QList<qreal>::const_iterator p = probs.constBegin(); p != probs.constEnd(); p++) {
+    if (*p < cdf[0]) {
+      quantiles.append(0);
+      goto nextp;
+    }
+    for (int i = 1; i < 256; i++)
+      if (*p < cdf[i]) {
+        qreal avg = (cdf[i-1] + cdf[i]) / 2.;
+        if (*p < avg) quantiles.append(i-1);
+        else quantiles.append(i);
+        goto nextp;
+      }
+    quantiles.append(255);
+nextp:
+    ;
+  }
+  return quantiles;
+}
+
+
 QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &quantiles) {
+  // FIXME zbytečně pomalé, lepší by byl trojitý bucketsort.
   checkSrcLoad();
   // "QImage::pixel() is expensive when used for massive pixel manipulations."
   int len = area.width()*area.height();
@@ -243,9 +303,9 @@ QImage Image::targetImage()  {
   qreal whratio = targetSize().width() / targetSize().height();
   qreal max = 0;
   for (int i = 0; i < 4; i++) {
-      qreal l = QLineF(corners_[i], corners_[(i+1) % 4]).length();
-      if (1 == i % 2) l *= whratio;
-      if (l > max) max = l;
+    qreal l = QLineF(corners_[i], corners_[(i+1) % 4]).length();
+    if (1 == i % 2) l *= whratio;
+    if (l > max) max = l;
   }
   qreal trfactor = max / targetSize().width(); // Tímto přenásobíme transformace, abychom dosáhli rozumného rozlišení
 
@@ -283,4 +343,71 @@ QPointF Image::transformDelta() {
 
 QPointF Image::transformDelta(qreal unitScaling) {
   return transformDelta() * unitScaling;
+}
+
+bool Image::colorsInverted() const {
+  return invertColors_;
+}
+void Image::setColorsInverted(bool i) {
+  invertColors_ = i;
+}
+
+int Image::minLightness() const {
+  return minLightness_;
+}
+void Image::setMinLightness(int v) {
+  minLightness_ = v;
+}
+int Image::maxLightness() const {
+  return maxLightness_;
+}
+void Image::setMaxLightness(int v) {
+  maxLightness_ = v;
+}
+
+static inline QRgb trimPxLightness (QRgb orig, qreal minL, qreal maxL) {
+//  if (minL == 0 && maxL == 1) return orig;
+  QColor c = orig;
+  qreal h, s, l;
+  c.getHslF(&h, &s, &l);
+
+  if (l <= minL)
+    return QColor(Qt::black).rgb();
+  if (l >= maxL)
+    return QColor(Qt::white).rgb();
+
+  c.setHslF(h, s, (l-minL) * (maxL - minL));
+  return c.rgb();
+}
+
+static inline QRgb trimPxLightness(QRgb orig, int minL, int maxL) {
+//  if (minL == 0 && maxL == 255) return orig;
+  return trimPxLightness(orig, (qreal) minL / (qreal) 255., (qreal) maxL / (qreal) 255.);
+}
+
+QImage Image::trimLightness(QImage img, int minL, int maxL, bool invertColors){
+  // TODO není potřeba převod na ARGB?
+  if(invertColors)
+    img.invertPixels(QImage::InvertRgb);
+  if (0 == minL && 255 == maxL)
+    return img;
+  int h = img.height(), w = img.width();
+  for(int j = 0; j < h; j++)
+    for (int i = 0; i < w; i++){
+      QRgb px = img.pixel(i,j);
+      px = trimPxLightness(px, minL, maxL);
+      img.setPixel(i, j, px);
+    }
+  return img;
+}
+
+QImage Image::trimLightness(int minL, int maxL, bool invertColors) {
+  checkSrcLoad();
+  QImage img = trimLightness(src_, minL, maxL, invertColors);
+  checkSrcUnload();
+  return img;
+}
+
+QImage Image::trimLightness() {
+  return trimLightness(minLightness(), maxLightness(), colorsInverted());
 }

@@ -76,6 +76,7 @@ void ImageView::setImage(Image *newimg) {
   saveChanges();
 
   img_ = newimg;
+  minValue_ =
   setCorners(newimg->corners());
   saveAndEmitPreviewStateChange(NotPreview);
 

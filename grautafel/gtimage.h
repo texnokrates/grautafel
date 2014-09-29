@@ -55,6 +55,9 @@ namespace GT {
     qreal lastZoom_;
     QPointF lastViewPoint_;
     struct PageSettings settings_;
+    bool invertColors_;
+//    QRgb minColor_, maxColor_;
+    int minLightness_, maxLightness_; //!< minValue_ gets transformed to 0, maxValue_ to 255, linearly in between.
     //void makeThumbnail();
     bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
     bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
@@ -66,7 +69,8 @@ namespace GT {
     void setLastZoom(qreal zoom);
     QPointF lastViewPoint(void) const;
     qreal lastZoom(void) const;
-
+    bool colorsInverted(void) const;
+    void setColorsInverted(bool);
 
     explicit Image(QObject *parent = 0);
     Image(const QString &fn, QObject *parent = 0, const PageSettings &settings = PageSettings::defaultSettings());
@@ -94,6 +98,13 @@ namespace GT {
     QTransform transform(qreal unitScaling);
     QPointF transformDelta(void);
     QPointF transformDelta(qreal unitScaling);
+    int minLightness(void) const;
+    int maxLightness(void) const;
+    void setMinLightness(int);
+    void setMaxLightness(int);
+    static QImage trimLightness(QImage img, int minL, int maxL, bool invertColors = false);
+    QImage trimLightness(int minL, int maxL, bool invertColors_); // Používá hodnoty zvnějšku (kvůli náhledům)
+    QImage trimLightness(void); // Používá uložené hodnoty
 
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
 //    //! Locates the board using the spiral algorithm.
@@ -108,6 +119,10 @@ namespace GT {
      * \param probs Numerical levels at which quantiles are wanted.
      */
     QList<QColor> getColorQuantiles (const QRect &area, const QList<qreal> &probs);
+    static QVector<int> getLightnessHistogram(const QImage &img, const QRect &area);
+    QVector<int> getLightnessHistogram(const QRect &area);
+    static QList<int> getLightnessQuantiles(const QImage &img, const QList<qreal> &probs, const QRect &area);
+    QList<int> getLightnessQuantiles(const QList<qreal> &probs, const QRect &area);
 
   signals:
     void srcLoadFailed(Image *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())

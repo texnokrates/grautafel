@@ -79,6 +79,7 @@ namespace GT {
     QGraphicsScene *sc_;
     void original_(void);
     void transformed_(void);
+    int minValue_, maxValue_; // Totéž co u Image (před uložením)
     enum PreviewState previewState_;
     void saveAndEmitPreviewStateChange(enum PreviewState nps);
     void saveChanges(void); // uloží změny před přepnutím na další obrázek
