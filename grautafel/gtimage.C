@@ -381,13 +381,27 @@ static inline QRgb trimPxLightness (QRgb orig, qreal minL, qreal maxL) {
   if (l >= maxL)
     return QColor(Qt::white).rgb();
 
-  c.setHslF(h, s, (l-minL) * (maxL - minL));
+  c.setHslF(h, s, (l-minL) / (maxL - minL));
   return c.rgb();
 }
 
 static inline QRgb trimPxLightness(QRgb orig, int minL, int maxL) {
 //  if (minL == 0 && maxL == 255) return orig;
   return trimPxLightness(orig, (qreal) minL / (qreal) 255., (qreal) maxL / (qreal) 255.);
+#if 0
+  int rgb[3];
+  rgb[0] = qRed(orig);
+  rgb[1] = qGreen(orig);
+  rgb[2] = qBlue(orig);
+  for(int i = 0; i < 3; i++) {
+      if (rgb[i] <= minL)
+        rgb[i] = 0;
+      if (rgb[i] >= maxL)
+        rgb[i] = 255;
+      rgb[i] = ((rgb[i] - minL) * 255) / (maxL - minL);
+    }
+  return qRgb(rgb[0], rgb[1], rgb[2]);
+#endif
 }
 
 QImage Image::trimLightness(QImage img, int minL, int maxL, bool invertColors){
