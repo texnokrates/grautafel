@@ -6,6 +6,9 @@
 
 using namespace GT;
 
+const qreal Image::lowerQuantileGuess = 0.03;
+const qreal Image::higherQuantileGuess = 0.14;
+
 QColor rgbInvert(QColor orig) {
   int r, g, b;
   orig.getRgb(&r, &g, &b);
