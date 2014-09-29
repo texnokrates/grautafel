@@ -76,8 +76,8 @@ void ImageView::setImage(Image *newimg) {
   saveChanges();
 
   img_ = newimg;
-  minLightness_ = newimg->minLightness();
-  maxLightness_ = newimg->maxLightness();
+  minColor_ = newimg->minColor();
+  maxColor_ = newimg->maxColor();
   invertColors_ = newimg->colorsInverted();
   setCorners(newimg->corners());
   saveAndEmitPreviewStateChange(NotPreview);
@@ -145,8 +145,8 @@ void ImageView::saveChanges() {
     img_->setCorners(corners());
     img_->setLastViewPoint(center());
     img_->setLastZoom(zoom());
-    img_->setMaxLightness(maxLightness());
-    img_->setMinLightness(minLightness());
+    img_->setMaxColor(maxColor());
+    img_->setMinColor(minColor());
     img_->setColorsInverted(colorsInverted());
   }
 }
@@ -246,7 +246,7 @@ void ImageView::transformed_(void) {
     QTransform qtt = quadToTarget();
     qreal qttScale = std::sqrt(qtt.determinant());
     // FIXME neškálovat barvy při pouhé změně transformace
-    pixmapItem_->setPixmap(QPixmap::fromImage(img_->trimLightness(minLightness(), maxLightness(), colorsInverted())));
+    pixmapItem_->setPixmap(QPixmap::fromImage(img_->trimColors(minColor(), maxColor(), colorsInverted())));
     setTransform(qtt * QTransform::fromScale(oldZoom/qttScale, oldZoom/qttScale));
     saveAndEmitPreviewStateChange(NewPreview);
   }
@@ -280,16 +280,16 @@ QTransform ImageView::quadToTarget() const {
 }
 
 bool ImageView::colorsInverted() const {return invertColors_;}
-int ImageView::maxLightness() const {return maxLightness_;}
-int ImageView::minLightness() const {return minLightness_;}
+QRgb ImageView::maxColor() const {return maxColor_;}
+QRgb ImageView::minColor() const {return minColor_;}
 
-void ImageView::setMaxLightness(int l) {
-  maxLightness_ = l;
+void ImageView::setMaxColor(QRgb l) {
+  maxColor_ = l;
   if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview);
 }
 
-void ImageView::setMinLightness(int l) {
-  minLightness_ = l;
+void ImageView::setMinColor(QRgb l) {
+  minColor_ = l;
   if (previewState_ != NotPreview) saveAndEmitPreviewStateChange(OldPreview);
 }
 

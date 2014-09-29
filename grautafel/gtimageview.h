@@ -46,8 +46,8 @@ namespace GT {
     QPointF center(void) const;
     QTransform quadToTarget(void) const;
 
-    int minLightness(void) const;
-    int maxLightness(void) const;
+    QRgb minColor(void) const;
+    QRgb maxColor(void) const;
     bool colorsInverted(void) const;
 
     QAction *zoomInAction, *zoomOutAction,
@@ -68,8 +68,8 @@ namespace GT {
     void updateLines(void); // Přepočte polohy hranic
     void clear(void);
 
-    void setMinLightness(int);
-    void setMaxLightness(int);
+    void setMinColor(QRgb);
+    void setMaxColor(QRgb);
     void setColorsInverted(bool);
 #if 0 // Doimplementovat
     void reset(void); // zruší změny na současném obrázku (načte hodnoty znova z něj)
@@ -87,7 +87,7 @@ namespace GT {
     QGraphicsScene *sc_;
     void original_(void);
     void transformed_(void);
-    int minLightness_, maxLightness_; // Totéž co u Image (před uložením)
+    QRgb minColor_, maxColor_; // Totéž co u Image (před uložením)
     bool invertColors_;
     enum PreviewState previewState_;
     void saveAndEmitPreviewStateChange(enum PreviewState nps);

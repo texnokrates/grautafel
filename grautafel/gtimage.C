@@ -29,8 +29,8 @@ Image::Image(const QString &fn, QObject *parent, const struct PageSettings &sett
 
   settings_ = settings;
 
-  maxLightness_ = 255;
-  minLightness_ = 0;
+  maxColor_ = qRgb(255, 255, 255);
+  minColor_ = qRgb(0, 0, 0);
   invertColors_ = false;
 
   setLastZoom(0);
@@ -71,6 +71,7 @@ QColor GTImage::getMedianColor(const QImage &img, const QRect &area) {
 }
 #endif
 
+#if 0
 QVector<int> Image::getLightnessHistogram(const QImage &img, const QRect &area) {
   QVector<int> hist(256);
   for(int i = 0; i < area.height(); i++) {
@@ -128,7 +129,7 @@ nextp:
   }
   return quantiles;
 }
-
+#endif
 
 QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &quantiles) {
   // FIXME zbytečně pomalé, lepší by byl trojitý bucketsort.
@@ -324,7 +325,7 @@ QImage Image::targetImage()  {
   transformed = transformed.copy(cutFrame);
   transformed.save("/tmp/debug.png");  // TODO odstranit
   checkSrcUnload();
-  transformed = trimLightness(transformed, minLightness(), maxLightness(), colorsInverted());
+  transformed = trimColors(transformed, minColor(), maxColor(), colorsInverted());
   return transformed;
 }
 
@@ -357,19 +358,20 @@ void Image::setColorsInverted(bool i) {
   invertColors_ = i;
 }
 
-int Image::minLightness() const {
-  return minLightness_;
+QRgb Image::minColor() const {
+  return minColor_;
 }
-void Image::setMinLightness(int v) {
-  minLightness_ = v;
+void Image::setMinColor(QRgb v) {
+  minColor_ = v;
 }
-int Image::maxLightness() const {
-  return maxLightness_;
+QRgb Image::maxColor() const {
+  return maxColor_;
 }
-void Image::setMaxLightness(int v) {
-  maxLightness_ = v;
+void Image::setMaxColor(QRgb v) {
+  maxColor_ = v;
 }
 
+#if 0
 static inline QRgb trimPxLightness (QRgb orig, qreal minL, qreal maxL) {
 //  if (minL == 0 && maxL == 1) return orig;
   QColor c = orig;
@@ -384,49 +386,52 @@ static inline QRgb trimPxLightness (QRgb orig, qreal minL, qreal maxL) {
   c.setHslF(h, s, (l-minL) / (maxL - minL));
   return c.rgb();
 }
-
-static inline QRgb trimPxLightness(QRgb orig, int minL, int maxL) {
-//  if (minL == 0 && maxL == 255) return orig;
-  return trimPxLightness(orig, (qreal) minL / (qreal) 255., (qreal) maxL / (qreal) 255.);
-#if 0
-  int rgb[3];
-  rgb[0] = qRed(orig);
-  rgb[1] = qGreen(orig);
-  rgb[2] = qBlue(orig);
-  for(int i = 0; i < 3; i++) {
-      if (rgb[i] <= minL)
-        rgb[i] = 0;
-      if (rgb[i] >= maxL)
-        rgb[i] = 255;
-      rgb[i] = ((rgb[i] - minL) * 255) / (maxL - minL);
-    }
-  return qRgb(rgb[0], rgb[1], rgb[2]);
 #endif
+
+static inline QRgb trimPxColors(QRgb orig, QRgb minL, QRgb maxL) {
+  int min, max, l, r, g, b;
+
+  min = qRed(minL), max = qRed(maxL), l = qRed(orig);
+  if (l <= min) r = 0;
+  else if (l >= max) r = 255;
+  else r = ((l - min) * 255) / (max - min + !(max-min));
+
+  min = qGreen(minL), max = qGreen(maxL), l = qGreen(orig);
+  if (l <= min) g = 0;
+  else if (l >= max) g = 255;
+  else g = ((l-min) * 255) / (max - min + !(max-min));
+
+  min = qBlue(minL), max = qBlue(maxL), l = qBlue(orig);
+  if (l <= min) b = 0;
+  else if (l >= max) b = 255;
+  else b = ((l-min) * 255) / (max - min + !(max - min));
+
+  return qRgb(r, g, b);
 }
 
-QImage Image::trimLightness(QImage img, int minL, int maxL, bool invertColors){
+QImage Image::trimColors(QImage img, QRgb minL, QRgb maxL, bool invertColors){
   // TODO není potřeba převod na ARGB?
   if(invertColors)
     img.invertPixels(QImage::InvertRgb);
-  if (0 == minL && 255 == maxL)
+  if (qRgb(0,0,0) == minL && qRgb(255,255,255) == maxL)
     return img;
   int h = img.height(), w = img.width();
   for(int j = 0; j < h; j++)
     for (int i = 0; i < w; i++){
       QRgb px = img.pixel(i,j);
-      px = trimPxLightness(px, minL, maxL);
+      px = trimPxColors(px, minL, maxL);
       img.setPixel(i, j, px);
     }
   return img;
 }
 
-QImage Image::trimLightness(int minL, int maxL, bool invertColors) {
+QImage Image::trimColors(QRgb minL, QRgb maxL, bool invertColors) {
   checkSrcLoad();
-  QImage img = trimLightness(src_, minL, maxL, invertColors);
+  QImage img = trimColors(src_, minL, maxL, invertColors);
   checkSrcUnload();
   return img;
 }
 
-QImage Image::trimLightness() {
-  return trimLightness(minLightness(), maxLightness(), colorsInverted());
+QImage Image::trimColors() {
+  return trimColors(minColor(), maxColor(), colorsInverted());
 }

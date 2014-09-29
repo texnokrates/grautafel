@@ -62,10 +62,10 @@ MainWidget::MainWidget(QWidget *parent) :
                    listWidget->pageSetupAction, SLOT(trigger()));
   QObject::connect(writePdfButton, SIGNAL(clicked()),
                    listWidget->writePdfAction, SLOT(trigger()));
-  QObject::connect(colorWidget, SIGNAL(minChanged(int)),
-                   view, SLOT(setMinLightness(int)));
-  QObject::connect(colorWidget, SIGNAL(maxChanged(int)),
-                   view, SLOT(setMaxLightness(int)));
+  QObject::connect(colorWidget, SIGNAL(minChanged(QRgb)),
+                   view, SLOT(setMinColor(QRgb)));
+  QObject::connect(colorWidget, SIGNAL(maxChanged(QRgb)),
+                   view, SLOT(setMaxColor(QRgb)));
   QObject::connect(colorWidget, SIGNAL(invertChanged(bool)),
                    view, SLOT(setColorsInverted(bool)));
   QObject::connect(listWidget, SIGNAL(selectedImage(Image*)),

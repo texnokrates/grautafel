@@ -15,19 +15,25 @@ namespace GT {
     explicit ColorWidget(QWidget *parent = 0);
 
   signals:
-    void minChanged(int);
-    void maxChanged(int);
+    void minChanged(QRgb);
+    void maxChanged(QRgb);
     void invertChanged(bool);
 
   public slots:
     void reloadVals(Image *);
+    void someMinChanged(void);
+    void someMaxChanged(void);
 
     // Kontrola min < max
-    void checkMin(int newmax);
-    void checkMax(int newmin);
+    void checkMinR(int newmax);
+    void checkMaxR(int newmin);
+    void checkMinG(int newmax);
+    void checkMaxG(int newmin);
+    void checkMinB(int newmax);
+    void checkMaxB(int newmax);
 
   private:
-    QSlider *minSlider_, *maxSlider_;
+    QSlider *minRSlider_, *maxRSlider_, *minGSlider_, *maxGSlider_, *minBSlider_, *maxBSlider_;
     QCheckBox *invertBox_;
   };
 
