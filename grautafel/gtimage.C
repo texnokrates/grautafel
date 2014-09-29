@@ -57,12 +57,15 @@ Image::Image(const QString &fn, QObject *parent,
             QRect(size_.width() / 4, size_.height() / 4,
                   size_.width() / 2, size_.height() / 2),
             probs);
-      if (quantiles[2].lightness() < 70) { // Tabule je tmavá, odhad vycucaný z prstu
+      qDebug() << "median lightness: " << quantiles[2].lightness();
+      if (quantiles[2].lightness() < 128) { // Tabule je tmavá, odhad vycucaný z prstu
          setColorsInverted(true);
+         qDebug() << "colors inverted";
          setMinColor(rgbInvert(quantiles[4]).rgb());
          setMaxColor(rgbInvert(quantiles[3]).rgb());
         }
       else {
+          setColorsInverted(false);
           setMinColor(quantiles[0].rgb());
           setMaxColor(quantiles[1].rgb());
         }

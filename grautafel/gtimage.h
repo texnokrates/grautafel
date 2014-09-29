@@ -25,8 +25,8 @@ namespace GT {
     static const int ThumbnailHeight = 96;
 
     // Konstanty pro odhady
-    const qreal lowerQuantileGuess = 0.02;
-    const qreal higherQuantileGuess = 0.2;
+    const qreal lowerQuantileGuess = 0.03;
+    const qreal higherQuantileGuess = 0.14;
 
     enum CornersStatus {
       NotSet = 0x0,
