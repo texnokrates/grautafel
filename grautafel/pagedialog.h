@@ -17,6 +17,7 @@ namespace GT {
   // Auxilliary class for the page format combobox
   class PageFormatModel : public QAbstractTableModel {
     Q_OBJECT
+
   public:
     PageFormatModel(QObject *parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const ;
@@ -24,6 +25,7 @@ namespace GT {
     int defaultRowIndex(void);
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     const QList<QPageSize::PageSizeId> *listedSizes(void) const;
+
   private:
     QList<QPageSize::PageSizeId> formatList_;
   };
@@ -31,6 +33,7 @@ namespace GT {
 
   class PageDialog : public QDialog {
     Q_OBJECT
+
   public:
     explicit PageDialog(Image::PageSettings &opt,  QWidget *parent = 0);
 
@@ -47,6 +50,7 @@ namespace GT {
     QDoubleSpinBox *rectHeightBox, *rectWidthBox;
     QLabel *widthHeightRatioLabel, *rightMarginLabel,
            *bottomMarginLabel;
+
   signals:
 
   public slots:
@@ -62,7 +66,6 @@ namespace GT {
     void horisontalCenter(void);
     void verticalCenter(void);
     void updateOrientation(bool isLandscape);
-
   };
 }
 #endif // PAGEDIALOG_H

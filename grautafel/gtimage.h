@@ -41,27 +41,7 @@ namespace GT {
       static PageSettings defaultSettings(void);
 
     };
-  private:
-    bool isOk_;
-    CornersStatus cstat_;
-    QString srcFilename_, //!< Path to the source photograph.
-            destFilename_; //!< Path to the transformed photograph.
-    QImage src_, dest_;
-    QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
-//  QTransform transform_; // Transforms the original image to the target rectangle
-    QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
-    QSize size_;
-    QRectF targetRect_;
-    qreal lastZoom_;
-    QPointF lastViewPoint_;
-    struct PageSettings settings_;
-    bool invertColors_;
-    QRgb minColor_, maxColor_;
-//    int minR_, maxR_, minG_, maxG_, minB_, maxB_; //!< minValue_ gets transformed to 0, maxValue_ to 255, linearly in between.
-    //void makeThumbnail();
-    bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
-    bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
-    void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy.
+
   public:
     void setPageSettings(PageSettings &);
     const PageSettings &pageSettings(void);
@@ -127,8 +107,27 @@ namespace GT {
   signals:
     void srcLoadFailed(Image *); // Nelze načíst obrázek (zpravidla vyšle checkSrcLoad())
     void changed(Image *);
-  public slots:
 
+  private:
+    bool isOk_;
+    CornersStatus cstat_;
+    QString srcFilename_, //!< Path to the source photograph.
+            destFilename_; //!< Path to the transformed photograph.
+    QImage src_, dest_;
+    QPixmap thumbnail_; //!< Thumbnail to be displayed on the thumbnail area.
+//  QTransform transform_; // Transforms the original image to the target rectangle
+    QVector <QPointF> corners_; // Corners are authoritative, not borders or transform
+    QSize size_;
+    QRectF targetRect_;
+    qreal lastZoom_;
+    QPointF lastViewPoint_;
+    struct PageSettings settings_;
+    bool invertColors_;
+    QRgb minColor_, maxColor_;
+    //void makeThumbnail();
+    bool checkSrcLoad(); //!< Reads the source image from srcFilename path if src is empty. OK=>true.
+    bool checkSrcLoadARGB(); //!< Reads the source image from srcFilename path if src is empty, converting it to ARGB32 format
+    void checkSrcUnload(); //!< Empties the src object if enabled by the memory policy
   };
 }
 #endif // GTIMAGE_H

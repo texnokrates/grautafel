@@ -18,29 +18,6 @@ namespace GT {
       int alpha;
     };
 
-  private:
-    std::vector<coords> coordsByValue_;
-    struct cmpstruct { // Řadíme sestupně
-      HoughTransform *m;
-      cmpstruct(HoughTransform *p) {
-        m = p;
-      }
-      bool operator()(const coords &a, const coords &b) {
-        return m->get(a) > m->get(b);
-      }
-    };
-
-    int topMargin_, bottomMargin_, leftMargin_, rightMargin_;
-    int angleRes_;
-    int radius_;
-    double *data_;
-    int originalHeight_;
-    int originalWidth_;
-    void set(int r, int alpha, double val);
-    void add(int r, int alpha, double val);
-    void coords_by_value_init(void);
-
-  public:
     coords coordsByValue(int n) {
       return coordsByValue_[n];
     }
@@ -65,9 +42,27 @@ namespace GT {
     std::vector<coords> roughCorners(double limitAngle = 0.55);
 
 
-//signals:
+  private:
+    std::vector<coords> coordsByValue_;
+    struct cmpstruct { // Řadíme sestupně
+      HoughTransform *m;
+      cmpstruct(HoughTransform *p) {
+        m = p;
+      }
+      bool operator()(const coords &a, const coords &b) {
+        return m->get(a) > m->get(b);
+      }
+    };
 
-//public slots:
+    int topMargin_, bottomMargin_, leftMargin_, rightMargin_;
+    int angleRes_;
+    int radius_;
+    double *data_;
+    int originalHeight_;
+    int originalWidth_;
+    void set(int r, int alpha, double val);
+    void add(int r, int alpha, double val);
+    void coords_by_value_init(void);
 
   };
 }

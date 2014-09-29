@@ -12,13 +12,16 @@ namespace GT {
 
   class ZoomWidget : public QToolBar {
     Q_OBJECT
+
   public:
     explicit ZoomWidget(ImageView *view, QWidget *parent = 0);
 //  void setImageView(GTImageView *v);
+
   signals:
 
   public slots:
     void displayZoom(qreal);
+
   private:
 //  QPushButton *plusButton_;
 //  QPushButton *minusButton_;

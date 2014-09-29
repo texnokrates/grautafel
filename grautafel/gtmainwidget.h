@@ -8,16 +8,20 @@ class QCheckBox;
 namespace GT {
   class MainWidget : public QWidget {
     Q_OBJECT
-    QCheckBox *toggleTransformBox_;
+
   public:
     explicit MainWidget(QWidget *parent = 0);
     ImageListWidget *listWidget;
     ImageView *view;
+
   signals:
 
   public slots:
     void ensurePreviewButtonNotTristate(int); // Ošklivý hack pro správné chování checkboxu
     void setPreviewButton(int); // int je Qt::CheckStatus
+
+  private:
+    QCheckBox *toggleTransformBox_;
   };
 }
 #endif // GTMAINWIDGET_H

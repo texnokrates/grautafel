@@ -204,3 +204,8 @@ void ImageListWidget::writePdf(void) {
   if(!writePdf(filename))
     qCritical() << trUtf8("Failed to write PDF."); //FIXME překlady
 }
+
+
+Image *ImageItem::image() const {
+  return img_;
+}

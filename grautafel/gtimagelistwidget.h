@@ -12,17 +12,11 @@ namespace GT {
 
   class ImageItem : public QFrame {
     Q_OBJECT
-    Image *img_;
-    QLabel *thumbnail_;
-    QVBoxLayout *layout_;
-//  QLabel *nameLine_;
 
   public:
     explicit ImageItem(const QString &srcname, QWidget *parent = 0,
           const Image::PageSettings &settings = Image::PageSettings::defaultSettings());
-    Image *image(void) const {
-      return img_;
-    }
+    Image *image(void) const;
     void drawSelected(void);
     void drawUnselected(void);
 
@@ -35,14 +29,15 @@ namespace GT {
     void unselect(void); // (potřebuji to jako slot?)
   protected:
     void focusInEvent(QFocusEvent *);
+
+  private:
+    Image *img_;
+    QLabel *thumbnail_;
+    QVBoxLayout *layout_;
   };
 
   class ImageListWidget : public QWidget {
     Q_OBJECT
-    QVBoxLayout * layout_;
-    QList <ImageItem *> items_; // Nutné kvůli mazání a přehazování
-    ImageItem *selected_;
-    Image::PageSettings defaultSettings_;
   public:
     bool deleteItem(ImageItem *it);
     bool addItem(const QString & filename);
@@ -74,6 +69,11 @@ namespace GT {
     void deleteSelected(void);
     void writePdf(void);
 
+  private:
+    QVBoxLayout * layout_;
+    QList <ImageItem *> items_; // Nutné kvůli mazání a přehazování
+    ImageItem *selected_;
+    Image::PageSettings defaultSettings_;
   };
 }
 #endif // GTIMAGELISTWIDGET_H
