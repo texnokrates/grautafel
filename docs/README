@@ -1,0 +1,79 @@
+Stručná uživatelské příručka programu Grautafel
+===============================================
+
+Účel
+----
+
+Aplikace slouží k převodu nafocených obdélníkových ploch (tabulí, papírů;
+dále jen tabule)
+do tisknutelné podoby / do podoby slajdů. To spočívá především v úpravě 
+kontrastu a projektivní transformaci zpět na obdélník.
+
+Výstupem je PDF soubor.
+
+Kompilace a spuštění
+--------------------
+
+Aplikace vyžaduje knihovnu Qt ve versi 5.3 nebo vyšší.
+
+Kompilace
+~~~~~~~~~
+
+ cd grautafel
+ qmake
+ make
+
+Spuštění
+~~~~~~~~
+
+ cd grautafel
+ ./grautafel
+
+Obsluha programu
+----------------
+
+Aplikace se ovládá pomocí GUI. K vytvoření cílového PDF
+dokumentu vedou následující kroky.
+
+1. Načtení obrázků.
+  - Stisknutím tlačítka Open (Otevřít) se spustí dialog k výběru
+    souborů k otevření. Soubory se načtou ve vybraném pořadí.
+  - Zaškrtnutím příslušných checkboxů se dá nastavit, zda
+    má aplikace při načtení hádat polohy rohů tabule a zda
+    se má pokusit nastavit správný rozsah barev pro výsledný
+    dokument.
+2. Úpravy.
+  - Zmenšeniny načtených obrázků se zobrazí v seznamu vpravo.
+    kliknutím na zmenšeninu se obrázek vybere k úpravám.
+  - Vybraný obrázek je možno v seznamu přesouvat nebo jej smazat
+    pomocí příslušných tlačítek.
+  - Na ploše vlevo se pomocí rohových prvků (červený obdélník
+    s křížkem) dají upravovat polohy rohů tabule.
+  - Posuvníky lze posouvat rozsahy vstupních barevných kanálů,
+    které se pak lineárně naškálují na maximální rozsah pro
+    zlepšení kontrastu. Hodnoty mimo tento rozsah zůstanou
+    na příslušném minimu nebo maximu.
+  - Zaškrtnutím příslušného pole lze invertovat barvy (vhodné
+    pro tmavé tabule a křídu).
+  - Zaškrtnutím políčka Preview (Náhled) se se zobrazí náhled
+    se zvolenými úpravami. (Pozn.: obrázek se zobrazí neoříznutý.)
+3. Zápis.
+  - Stisknutím tlačítka Page Setup... se zobrazí dialog s nastavením
+    geometrie výstupu. Rozměry cílového obdélníka by měly míti stejný
+    poměr stran jako skutečná tabule.
+  - Po stisknutí tlačítka Write PDF... se zobrazí dialog, k výběru
+    cílového souboru. Po schválení se výběr zapíše.
+
+
+Další technikálie (magické konstanty)
+-------------------------------------
+
+Z důvodu časové náročnosti se Houghova transformace počítá z obrázku
+naškálovaného na rozměr maximálně 480x320.
+
+Automatické vstupní barevné rozsahy jsou určeny jako kvantily 0.03
+a 0.14 počítané na prostřední čtvrtině vstupního obrázku (tzn.,
+že horních 86 % pixelů je považováno za „bílé“ – s přihlédnutím
+k tomu, že se každý rgb kanál počítá zvlášť). Což pochopitelně
+může přivodit problémy, pokud je popsáno přes 86 % tabule.
+

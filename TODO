@@ -1,30 +1,66 @@
-Plán algoritmu pro začátek:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TODO
+====
+(Aneb co by se dalo udělat, kdybych nevěděl, co s časem.)
 
--  Udělat histogram dle středu 
 
--  Hledáním do šířky najít souvislou plochu (s nastaveným rozptylem,
-   dle předchozího bodu). (Dynamické posouvání střední barvy?) 
-   Sežrat enklávy.
+Doplnění algoritmu na hledání okrajů
+------------------------------------
 
--  Najít okrajové linie. Prok každé dva okrajové body určit
-   spojnici (s vahou dle vzájemné vzdálenosti). "Nejčastější"
-   čtyři spojnice vyberu
+Přesnost by se dala například tím zvětšit tím, 
+že by se udělal pás kolem předchozích odhadů a pak by se 
+udělala (nějakým způsobem vážená) Houghova transformace
+pouze v tomto páse. 
 
--  Určit průsečíky, transformační matici, ztransformovat.
+Také by bylo dobré nějak najít „nejvnitřnější část 
+okraje“, aby ve výsledném souboru okraje úplně zmizely.
 
-Další vychytávky:
------------------
 
-Nakonec by to mělo dělat hezkou presentaci.
+Možnosti GUI
+------------
 
-Diffy tabulí
-~~~~~~~~~~~~
+- Nechat možnost nastavit cílové 
+rozměry pro jednotlivé obrázky (vcelku triviální, vnitřnosti
+jsou k tomu uzpůsobené). 
+- Možnost nastavit veličiny, jež jsou momentálně „magickými
+konstantami“. Popřípadě je nechat konstantní, ale nějak optimalisovat
+jejich honoty.
+  1. Rozlišení Houghovy transformace.
+  2. Kvantily barev pro odhady.
+- Paralelisace (netýká se jen GUI) a dynamické načítání. Progress dialogy.
+- Dynamický náhled (souvisí s předchozím).
+- Thumbnails by možná měly zobrazovat spíše cílový než zdrojový obrázek.
+- Chyby by se mohly vypisovat i jinam než jen do terminálu.
+- Stavový řádek.
+- Tlačítko Reset pro vybraný obrázek (zruší poslední úpravy).
+- Hezčí náhledy (ořez, nedeformovat ovládací prvky rohů).
 
--  Tlustá souvislá plocha (enkláva) bude přednášející, tato část
-   se do výsledku nezapočte.
+Optimalisace načítání
+---------------------
 
--  Ostatní se nějak "vystředuje" (jak, aby to bylo citlivé ke křivkám?).
+- Cache na obrázky a vůbec sofistikovanější práce s pamětí.
 
--  Zvýraznění (například změnou barvy) dopsaného (a smazaného?) textu.
 
+Nastavení kontrastu
+-------------------
+
+Použít jinou metodu výpočtu úpravy barev než po částech
+lineární funkci (co používá gimp?).
+
+
+„diff“ a odstranění překážejících předmětů
+------------------------------------------
+
+Z původní specifikace. Vyžadovalo by mnohem přesnější hledání okrajů.
+
+
+Dokumentace
+-----------
+
+Bylo by hezké, kdyby bylo zdoxygenováno víceméně vše.
+
+
+Testy
+-----
+
+Nezkoušel jsem, jak aplikace funguje s obrázky s indexovanými barvami
+či jinými ne-(A)RGB formáty.

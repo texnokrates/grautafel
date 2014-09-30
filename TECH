@@ -1,0 +1,35 @@
+Rozcestník implementace aplikace Grautafel
+==========================================
+
+Aplikace je postavena nad knihovnou Qt, přičemž kvůli funkcionalitě
+zápisu PDF a informacem o velikostech stránek je k úspěšné kompilaci
+vyžadována verse alespoň 5.3.
+
+Nakládání s jednotlivými obrázky zajišťuje třída GT::Image (gtimage.h).
+Drží cestu ke zdrojovému souboru a všechny parametry ke způsobu, jakým
+se vytvoří příslušná stránka ve výsledném PDF (geometrie, rozsahy barev,
+transformace).
+Zde je namístě zmínit, že z důvodu úspory RAM jsou jednotlivé disky
+načítány z disku, když je s nimi pracováno. To nevypadá moc effektivně,
+na druhou stranu jsou však ostatní operace náročnější než načítání obrázku.
+
+„Nad“ touto třídou je postaven GUI widget GT::ImageItem representující 
+položku v seznamu obrázků.
+
+Seznam těchto obrázků (včetně GUI) drží třída GT::ImageListWidget. Ta taktéž
+zajišťuje metody pro načítání seznamu souborů a zápis výsledného PDF.
+
+Třída GT::ImageView poskytuje náhled na vybraný obrázek a ruční ovládání
+polohy rohů tabule. K němu je GT::ViewZoomWidget, který umožňuje měnit
+přiblížení.
+
+Téměř vše ostatní jsou různé ovládací prvky, vše dohromady slepuje
+GT:MainWidget.
+
+Nakonec GT::HoughTransform je třída držící Houghovu transformaci obrázku
+(po prohnání Sobelovým detektorem hran, v. GT::ConvolutionKernel)
+a poskytující metody pro získání poloh rohů.
+
+*Přiznávám, systematiku názvů zdrojových souborů a způsob komentování kódů
+(tj. anglicko-česky) jsem nedržel příliš konsistentní.*
+
