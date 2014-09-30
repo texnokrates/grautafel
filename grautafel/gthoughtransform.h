@@ -13,7 +13,9 @@ class QImage;
 
 namespace GT {
   /*!
-   * \brief Class holding the Hough transform of given image.
+   * Class holding the Hough transform of given image.
+   * alpha == 0 means the border's normal is pointing to the right.
+   * Increasing alpha means rotating the normal clockwise.
    */
   class HoughTransform
   {
@@ -37,7 +39,7 @@ namespace GT {
       return radius_;
     }
     QImage visualise(void) const;
-    std::vector<Coords> roughCorners(double limitAngle = 0.55);
+    std::vector<Coords> roughEdges(double limitAngle = 0.55);
 
     static QVector<QPointF> guessCorners(const QImage img,
                                          const QSize &maxSize = QSize(480, 320),
@@ -69,8 +71,7 @@ namespace GT {
 
   };
 
-  QLineF houghLine(double r, double alpha, int rectWidth, int rectHeight);
-  QLineF houghLine(HoughTransform::Coords &coords, const QSize &size);
+  QLineF houghLine(double r, double radAlpha, int rectWidth, int rectHeight);
   QLineF intersectLineRect(const QLineF &start, const QRectF &rect);
 }
 #endif // GTHOUGHTRANSFORM_H

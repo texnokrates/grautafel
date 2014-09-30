@@ -7,6 +7,7 @@ class QVBoxLayout;
 class QLabel;
 #include <QAction>
 #include "gtimage.h"
+class QWidget;
 
 namespace GT {
 
@@ -75,6 +76,7 @@ namespace GT {
     QList <ImageItem *> items_; // Nutné kvůli mazání a přehazování
     ImageItem *selected_;
     Image::PageSettings defaultSettings_;
+    QWidget *waitingWindow();
   };
 }
 #endif // GTIMAGELISTWIDGET_H

@@ -2,6 +2,8 @@
 #include "gtconvolutionkernel.h"
 #include <QImage>
 #include <QtGlobal>
+#include <QDebug>
+#include <QUuid>
 
 using namespace GT;
 
@@ -88,30 +90,42 @@ void HoughTransform::coords_by_value_init(void) {
 }
 
 /*!
- * \brief Guesses the board's corners' position
+ * \brief Guesses the board's borders' position
  *
  * Goes through the Hought transform from the brightest point.
  * Searches for the first four brightest points, while ignoring
  * anything in the +- 20 degrees around the points already found.
  *
  * \param Optional another limit for the minimum angle difference (in radians).
- * \return Guessed positions in Hough transform coordinates.
+ * \return Guessed positions in Hough transform coordinates, sorted by angle starting with
+ * what is thought to be the upper edge.
+ * (N.B. This order is wrong if the center of the original image lies outside the board.)
  */
-std::vector<HoughTransform::Coords> HoughTransform::roughCorners(double limitAngle) {
+std::vector<HoughTransform::Coords> HoughTransform::roughEdges(double limitAngle) {
   int limitAlpha = limitAngle * angleRes_ / (2 * pi);
-  std::vector<Coords> corners(4);
+  std::vector<Coords> borders(4);
   int c = 0;
   for(std::vector<Coords>::const_iterator i = coordsByValue_.begin(); i != coordsByValue_.end(); i++) {
     for(int cc = 0; cc < c; cc++)
-      if (angleRes_/2 - abs(angleRes_ / 2 - abs(i->alpha - corners[cc].alpha))<= limitAlpha)
+      if (angleRes_/2 - abs(angleRes_ / 2 - abs(i->alpha - borders[cc].alpha))<= limitAlpha)
         goto next;
-    corners[c] = *i;
+    borders[c] = *i;
     c++;
-    if (c >= 4) return corners;
+    if (c >= 4) {
+      // Bubblesort podle úhlu
+      for (int k = 0; k < 4; k++)
+        for (int j = k + 1; j < 4; j++)
+          if((borders[k].alpha + (angleRes_ * 5) / 8) % angleRes_ > (borders[j].alpha + ((angleRes_ * 5) / 8)) % angleRes_) {
+            Coords tmp = borders[k];
+            borders[k] = borders[j];
+            borders[j] = tmp;
+          }
+      return borders;
+    }
 next:
     ;
   }
-  abort(); // Sem jsme se neměli dostat. Příliš velký limitAngle?
+  Q_UNREACHABLE(); // Sem jsme se neměli dostat. Příliš velký limitAngle?
 }
 
 /*!
@@ -155,13 +169,17 @@ double *HoughTransform::operator[](int r) const {
  */
 QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &maxSize, int angleRes) {
   QImage imgscaled = src.scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  qDebug() << imgscaled.size();
+  imgscaled.save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
   HoughTransform ht(&imgscaled, angleRes);
-  QVector<Coords> borders = QVector<Coords>::fromStdVector(ht.roughCorners());
+  ht.visualise().save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
+  QVector<Coords> borders = QVector<Coords>::fromStdVector(ht.roughEdges());
 
   QVector<QPointF> corners(4);
   for (int i = 0; i < 4; i++) {
-    QLineF a = houghLine(borders[i], imgscaled.size());
-    QLineF b = houghLine(borders[(i + 1) % 4], imgscaled.size());
+    qDebug() << angleRes << borders[i].alpha << borders[i].alpha * 2 * pi / angleRes;
+    QLineF a = houghLine(borders[i].r, borders[i].alpha * 2 * pi / angleRes, imgscaled.width(), imgscaled.height());
+    QLineF b = houghLine(borders[(i + 1) % 4].r, borders[(i + 1) % 4].alpha * 2 * pi / angleRes, imgscaled.width(), imgscaled.height());
     QPointF intersection;
     if (QLineF::NoIntersection == a.intersect(b, &intersection)) {
       Q_UNREACHABLE();
@@ -179,31 +197,25 @@ HoughTransform::~HoughTransform() {
 }
 
 /*!
- * \brief Overloaded function.
- * \param r
- * \param alpha
- * \param rectWidth
- * \param rectHeight
- * \return
- */
-QLineF GT::houghLine(double r, double alpha, int rectWidth, int rectHeight) {
-  int xo = rectWidth / 2;
-  int yo = rectHeight / 2;
-  double y = r * sin(alpha);
-  double x = r * cos(alpha);
-  QLineF start(xo+x, yo+y, xo+x-y, yo+y+x);
-  QRectF rect(0,0,rectWidth,rectHeight);
-  return intersectLineRect(start, rect);
-}
-
-/*!
  * \brief Transforms Hough transform coordinates to real line.
- * \param Hough transform coordinates
- * \param size of the original image
+ * \param Hough transform r coordinate
+ * \param Hough transform angle coordinate in radians
+ *      (i.e. not in the integer coordinates as in Coords;
+ *       that must be multiplied by 2*pi/angleRes)
+ * \param width of the original image
+ * \param height of the original image
  * \return a line fitted to the original image
  */
-QLineF GT::houghLine(HoughTransform::Coords &coords, const QSize &size) {
-  return GT::houghLine(coords.r, coords.alpha, size.width(), size.height());
+
+QLineF GT::houghLine(double r, double radAlpha, int rectWidth, int rectHeight) {
+  int xo = rectWidth / 2;
+  int yo = rectHeight / 2;
+  double y = r * sin(radAlpha);
+  double x = r * cos(radAlpha);
+  QLineF start(xo+x, yo+y, xo+x-y, yo+y+x);
+  QRectF rect(0,0,rectWidth,rectHeight);
+  qDebug() << "Hough coords" << r << ", " << radAlpha << "transformed to " << intersectLineRect(start, rect);
+  return intersectLineRect(start, rect);
 }
 
 /*!

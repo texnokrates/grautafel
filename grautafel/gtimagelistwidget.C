@@ -9,6 +9,8 @@
 #include <QPdfWriter>
 #include <QPainter>
 #include <QErrorMessage>
+#include <QWidget>
+#include <QCoreApplication>
 
 using namespace GT;
 
@@ -38,7 +40,7 @@ void ImageItem::drawSelected() {
 
 void ImageItem::focusInEvent(QFocusEvent *event) {
   drawSelected();
-  qDebug() << "Focus on GTImageItem at " <<this;
+//  qDebug() << "Focus on GTImageItem at " <<this;
   emit requestSelection(this);
 }
 
@@ -132,10 +134,23 @@ void ImageListWidget::moveSelectedDown(void) {
   items_.insert(i, taken2);
 }
 
+QWidget *ImageListWidget::waitingWindow() {
+  // FIXME broken, the window is shown but not rendered during the process.
+  QWidget *w = new QLabel(trUtf8("Please wait..."));
+  w->setWindowModality(Qt::ApplicationModal);
+  w->setWindowTitle(trUtf8("Processing"));
+  w->show();
+  w->activateWindow();
+  return w;
+
+}
+
 bool ImageListWidget::addItems(const QStringList &filenames) {
   bool ok = true;
+  QWidget *w = waitingWindow();
   for(QList<QString>::ConstIterator i = filenames.constBegin(); i != filenames.constEnd(); i++)
     if(!addItem(*i)) ok = false;
+  delete w;
   return ok;
 }
 
@@ -169,6 +184,7 @@ void ImageListWidget::pageSetup(void) {
 
 bool ImageListWidget::writePdf(QString &target) {
   QPdfWriter w(target);
+  QWidget *ww = waitingWindow();
   /* První stránku nutno nastavit ještě před konstrukcí QPainter */
   w.setPageSize(items_[0]->image()->pageSettings().pageSize);
   w.setPageSizeMM(items_[0]->image()->pageSettings().pageSizeMM);
@@ -182,17 +198,20 @@ bool ImageListWidget::writePdf(QString &target) {
     w.setPageSizeMM(gtimg->pageSettings().pageSizeMM);
     if (i != items_.constBegin()) if(!w.newPage()) {
         qCritical() << trUtf8("Failed creating new page.");
+        delete ww;
         return false;
       }
 
     QImage transformed = gtimg->targetImage();
     if(transformed.isNull()) {
       qCritical() << trUtf8("Transformed image is null.");
+      delete ww;
       return false;
     }
 
     painter.drawImage(gtimg->targetRect(), transformed);
   }
+  delete ww;
   return true;
 }
 

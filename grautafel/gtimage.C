@@ -62,10 +62,10 @@ Image::Image(const QString &fn, QObject *parent,
             QRect(size_.width() / 4, size_.height() / 4,
                   size_.width() / 2, size_.height() / 2),
             probs);
-      qDebug() << "median lightness: " << quantiles[2].lightness();
+      //qDebug() << "median lightness: " << quantiles[2].lightness();
       if (quantiles[2].lightness() < 128) { // Tabule je tmavá, odhad vycucaný z prstu
          setColorsInverted(true);
-         qDebug() << "colors inverted";
+         //qDebug() << "colors inverted";
          setMinColor(rgbInvert(quantiles[4]).rgb());
          setMaxColor(rgbInvert(quantiles[3]).rgb());
         }
@@ -124,7 +124,7 @@ QColor GTImage::getMedianColor(const QImage &img, const QRect &area) {
 QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &probs) {
   // FIXME zbytečně pomalé, lepší by byl trojitý bucketsort.
   checkSrcLoad();
-  qDebug() << area;
+  //qDebug() << area;
   // "QImage::pixel() is expensive when used for massive pixel manipulations."
   QVector<int> hr(256), hg(256), hb(256); // histogram
   for(int i = 0; i < area.height(); i++) {
@@ -203,7 +203,7 @@ QList<QColor> Image::getColorQuantiles (const QRect &area, const QList<qreal> &p
       endB:
       quantiles.append(qRgb(r,g,b));
     }
-  qDebug() << quantiles;
+  //qDebug() << quantiles;
   return quantiles;
 }
 
@@ -314,6 +314,10 @@ bool Image::checkSrcLoad() {
   return true;
 }
 
+/*! Coordinates of the saved corner positions.
+ *
+ * The zeroth corner is top left, continuing clockwise.
+ */
 QVector<QPointF> Image::corners() {
   if(cstat_ != NotSet) return corners_;
   else {
@@ -370,14 +374,14 @@ QTransform Image::transform() {
   QPolygonF photoQuad(corners());
   QPolygonF targetQuad(targetRect());
   targetQuad.pop_back(); // Workaround for a bug in QTransform::squareToQuad().
-  qDebug() << photoQuad;
-  qDebug() << targetQuad;
+  //qDebug() << photoQuad;
+  //qDebug() << targetQuad;
   QTransform tr;
   if (false == QTransform::quadToQuad(photoQuad, targetQuad, tr)) {
     qWarning("Failed to find the transform (perhaps the source polygon is non-convex). Setting to identity.");
   }
-  qDebug() << "Orig. tf: " << tr;
-  qDebug() << "Real  tf: " << QImage::trueMatrix(tr, size_.width(), size_.height());
+  //qDebug() << "Orig. tf: " << tr;
+  //qDebug() << "Real  tf: " << QImage::trueMatrix(tr, size_.width(), size_.height());
   return tr;
 }
 
@@ -427,7 +431,7 @@ QImage Image::targetImage()  {
   }
   qreal trfactor = max / targetSize().width(); // Tímto přenásobíme transformace, abychom dosáhli rozumného rozlišení
 
-  qDebug() << "transform scale factor:" << trfactor;
+  //qDebug() << "transform scale factor:" << trfactor;
 
   QRect cutFrame(trfactor * (targetRect().x() - transformDelta().x()),
                  trfactor * (targetRect().y() - transformDelta().y()),

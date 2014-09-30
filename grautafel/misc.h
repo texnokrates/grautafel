@@ -71,7 +71,7 @@ public:
     QPixmap pixmap;
     pixmap.convertFromImage(ht->visualise());
     addPixmap(pixmap);
-    std::vector<HoughTransform::Coords> cns = ht->roughCorners();
+    std::vector<HoughTransform::Coords> cns = ht->roughEdges();
     for (int i = 0; i < 4; i++)
       qDebug() << "Corner " << i << ": (" << cns[i].alpha << "," << cns[i].r << ")" << endl;
   }

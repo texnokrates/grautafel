@@ -1,1 +1,2 @@
-- Okraje neodpovídají skutečnosti / asymetrie (má to co do činění s nastavením okrajů v QPdfWriter?).
+- Okraje výstupního PDF neodpovídají skutečnosti / asymetrie (má to co do činění s nastavením okrajů v QPdfWriter?).
+- Nastavení nekonvexního čtyřúhelníka úplně rozbije chování GT::ImageView. Totěž, jsou-li rohy zrcadlově prohozeny.
