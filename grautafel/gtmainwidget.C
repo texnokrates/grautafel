@@ -20,6 +20,8 @@ MainWidget::MainWidget(QWidget *parent) :
   QPushButton *openButton = new QPushButton(trUtf8("Open"));
   QPushButton *deleteButton = new QPushButton(trUtf8("Delete"));
   toggleTransformBox_ = new QCheckBox(trUtf8("Preview"));
+  QCheckBox *edgeGuessBox = new QCheckBox(trUtf8("Guess edges position (slow)"));
+  QCheckBox *colorGuessBox = new QCheckBox(trUtf8("Guess color ranges"));
   ColorWidget *colorWidget = new ColorWidget;
   ZoomWidget *zoomWidget = new ZoomWidget(view);
   QPushButton *pageSetupButton = new QPushButton(trUtf8("Page Setup..."));
@@ -27,6 +29,8 @@ MainWidget::MainWidget(QWidget *parent) :
 
 
   QVBoxLayout *bwl = new QVBoxLayout;
+  bwl->addWidget(edgeGuessBox);
+  bwl->addWidget(colorGuessBox);
   bwl->addWidget(openButton);
   bwl->addWidget(upButton);
   bwl->addWidget(downButton);
@@ -40,6 +44,10 @@ MainWidget::MainWidget(QWidget *parent) :
   buttonWidget->setLayout(bwl);
 
   listWidget = new ImageListWidget;
+  QObject::connect(edgeGuessBox, SIGNAL(toggled(bool)),
+                   listWidget, SLOT(setEdgeGuess(bool)));
+  QObject::connect(colorGuessBox, SIGNAL(toggled(bool)),
+                   listWidget, SLOT(setColorGuess(bool)));
   QObject::connect(listWidget, SIGNAL(emptied()),
                    view, SLOT(clear()));
   QObject::connect(listWidget, SIGNAL(selectedImage(Image*)),
@@ -74,6 +82,9 @@ MainWidget::MainWidget(QWidget *parent) :
                    colorWidget, SLOT(reloadVals(Image*)));
 
   // TODO naconnectit ostatní tlačítka
+
+  edgeGuessBox->setChecked(false);
+  colorGuessBox->setChecked(true);
 
   QHBoxLayout *layout = new QHBoxLayout;
   layout->addWidget(view);

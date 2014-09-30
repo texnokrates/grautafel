@@ -3,7 +3,7 @@
 #include <QImage>
 #include <QtGlobal>
 #include <QDebug>
-#include <QUuid>
+//#include <QUuid>
 
 using namespace GT;
 
@@ -169,15 +169,14 @@ double *HoughTransform::operator[](int r) const {
  */
 QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &maxSize, int angleRes) {
   QImage imgscaled = src.scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  qDebug() << imgscaled.size();
-  imgscaled.save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
+//  qDebug() << imgscaled.size();
+//  imgscaled.save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
   HoughTransform ht(&imgscaled, angleRes);
-  ht.visualise().save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
+//  ht.visualise().save("/tmp/debug/" + QUuid::createUuid().toString() + ".png");
   QVector<Coords> borders = QVector<Coords>::fromStdVector(ht.roughEdges());
 
   QVector<QPointF> corners(4);
   for (int i = 0; i < 4; i++) {
-    qDebug() << angleRes << borders[i].alpha << borders[i].alpha * 2 * pi / angleRes;
     QLineF a = houghLine(borders[i].r, borders[i].alpha * 2 * pi / angleRes, imgscaled.width(), imgscaled.height());
     QLineF b = houghLine(borders[(i + 1) % 4].r, borders[(i + 1) % 4].alpha * 2 * pi / angleRes, imgscaled.width(), imgscaled.height());
     QPointF intersection;
@@ -214,7 +213,7 @@ QLineF GT::houghLine(double r, double radAlpha, int rectWidth, int rectHeight) {
   double x = r * cos(radAlpha);
   QLineF start(xo+x, yo+y, xo+x-y, yo+y+x);
   QRectF rect(0,0,rectWidth,rectHeight);
-  qDebug() << "Hough coords" << r << ", " << radAlpha << "transformed to " << intersectLineRect(start, rect);
+//  qDebug() << "Hough coords" << r << ", " << radAlpha << "transformed to " << intersectLineRect(start, rect);
   return intersectLineRect(start, rect);
 }
 

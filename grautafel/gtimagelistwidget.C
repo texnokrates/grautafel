@@ -81,7 +81,7 @@ ImageListWidget::ImageListWidget(QWidget *parent) :
 }
 
 bool ImageListWidget::addItem(const QString & filename) {
-  ImageItem *item = new ImageItem(filename, 0, defaultSettings_);
+  ImageItem *item = new ImageItem(filename, 0, defaultSettings_, guessColors_, guessEdges_);
   if(!item->image()->isOk()) {
     delete item;
     return false;
@@ -229,3 +229,6 @@ void ImageListWidget::writePdf(void) {
 Image *ImageItem::image() const {
   return img_;
 }
+
+void ImageListWidget::setEdgeGuess(bool g) { guessEdges_ = g;}
+void ImageListWidget::setColorGuess(bool c) { guessColors_ = c; }

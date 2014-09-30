@@ -71,11 +71,16 @@ namespace GT {
     void deleteSelected(void);
     void writePdf(void);
 
+    // Toto by mohlo jít nějak lépe, abych neduplikoval nastavení
+    void setEdgeGuess(bool);
+    void setColorGuess(bool);
+
   private:
     QVBoxLayout * layout_;
     QList <ImageItem *> items_; // Nutné kvůli mazání a přehazování
     ImageItem *selected_;
     Image::PageSettings defaultSettings_;
+    bool guessEdges_, guessColors_;
     QWidget *waitingWindow();
   };
 }
