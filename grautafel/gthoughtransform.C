@@ -158,8 +158,17 @@ QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &max
   HoughTransform ht(&imgscaled, angleRes);
   QVector<Coords> borders = QVector<Coords>::fromStdVector(ht.roughCorners());
 
-
-
+  QVector<QPointF> corners(4);
+  for (int i = 0; i < 4; i++) {
+    QLineF a = houghLine(borders[i], imgscaled.size());
+    QLineF b = houghLine(borders[(i + 1) % 4], imgscaled.size());
+    QPointF intersection;
+    if (QLineF::NoIntersection == a.intersect(b, &intersection)) {
+      Q_UNREACHABLE();
+    }
+    corners[i] = intersection * (src.width() / (qreal)imgscaled.width());
+  }
+  return corners;
 }
 
 /*!
@@ -198,10 +207,10 @@ QLineF GT::houghLine(HoughTransform::Coords &coords, const QSize &size) {
 }
 
 /*!
- * \brief Umístí přímku do zadaného obdélníku (jako tětivu)
- * \param Zadaná přímka (začátek a konec QLineF nejsou brány v úvahu).
- * \param Daný obdélník.
- * \return QLineF začínající a končící na stranách zadaného obdélníka
+ * \brief Places a line into given rectangle
+ * \param the line
+ * \param the rectangle
+ * \return QLineF beginning and ending at the edges of the rectangle.
  */
 QLineF GT::intersectLineRect(const QLineF &st, const QRectF &rect) {
   QLineF start = st;

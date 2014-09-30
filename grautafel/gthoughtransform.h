@@ -28,15 +28,9 @@ namespace GT {
     }
     HoughTransform(const QImage *src, int angleResolution, int margin = 2);//, QObject *parent = 0);
     ~HoughTransform();
-    int angleResolution(void) const {
-      return angleRes_;
-    }
-    int origHeight(void) const {
-      return originalHeight_;
-    }
-    int origWidth(void) const {
-      return originalWidth_;
-    }
+    int angleResolution(void) const {return angleRes_;}
+    int origHeight(void) const {return originalHeight_;}
+    int origWidth(void) const {return originalWidth_;}
     double get(int r, int alpha) const;
     double get(const Coords c) const;
     int radius(void) const {

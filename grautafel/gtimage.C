@@ -3,6 +3,7 @@
 #include <QImageReader>
 #include <QSize>
 #include <QPagedPaintDevice>
+#include "gthoughtransform.h"
 
 using namespace GT;
 
@@ -37,8 +38,9 @@ Image::Image(const QString &fn, QObject *parent,
   if (guessColors || guessShape)
     checkSrcLoad();
 
-  if (false /*quessShape*/) {
-      ;//TODO
+  if (guessShape) {
+    corners_ = HoughTransform::guessCorners(src_);
+    cstat_ = GuessedByHoughTransform;
   }
   else {
     corners_ = QVector<QPointF>(4);
