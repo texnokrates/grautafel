@@ -12,6 +12,9 @@
 class QImage;
 
 namespace GT {
+  /*!
+   * \brief Class holding the Hough transform of given image.
+   */
   class HoughTransform
   {
   public:
@@ -39,7 +42,6 @@ namespace GT {
     int radius(void) const {
       return radius_;
     }
-    double *operator[](int r) const;
     QImage visualise(void) const;
     std::vector<Coords> roughCorners(double limitAngle = 0.55);
 
@@ -69,6 +71,7 @@ namespace GT {
     void set(int r, int alpha, double val);
     void add(int r, int alpha, double val);
     void coords_by_value_init(void);
+    double *operator[](int r) const;
 
   };
 

@@ -20,14 +20,28 @@ void HoughTransform::add(int r, int alpha, double val) {
   data_[r * angleRes_ + alpha] += val;
 }
 
+/*!
+ * \brief Overloaded method.
+ */
 double HoughTransform::get(int r, int alpha) const {
   return data_[r * angleRes_ + alpha];
 }
 
+/*!
+ * \brief Access to Hough transform at individual points.
+ * \param Hought transform coordinates.
+ * \return Value of the Hough transform at a given point.
+ */
 double HoughTransform::get(const Coords c) const {
   return data_[c.r * angleRes_ +c.alpha];
 }
 
+/*!
+ * \brief Constructs the Hough transform.
+ * \param Source image.
+ * \param Resolution of the angle coordinate
+ * \param Margin (necessary to exclude false maxima)
+ */
 HoughTransform::HoughTransform(const QImage *src, int angleResolution, int margin) {
   leftMargin_ = rightMargin_ = topMargin_ = bottomMargin_ = margin;
   originalHeight_ = src->height();
@@ -61,6 +75,7 @@ HoughTransform::HoughTransform(const QImage *src, int angleResolution, int margi
 
 #include <algorithm>
 
+// Initialises the vector with coordinates sorted by value
 void HoughTransform::coords_by_value_init(void) {
   coordsByValue_.resize(radius_ * angleRes_);
   for(int r = 0; r < radius_; r++)
@@ -79,7 +94,8 @@ void HoughTransform::coords_by_value_init(void) {
  * Searches for the first four brightest points, while ignoring
  * anything in the +- 20 degrees around the points already found.
  *
- * \return
+ * \param Optional another limit for the minimum angle difference (in radians).
+ * \return Guessed positions in Hough transform coordinates.
  */
 std::vector<HoughTransform::Coords> HoughTransform::roughCorners(double limitAngle) {
   int limitAlpha = limitAngle * angleRes_ / (2 * pi);
@@ -98,6 +114,10 @@ next:
   abort(); // Sem jsme se neměli dostat. Příliš velký limitAngle?
 }
 
+/*!
+ * \brief Visualisation of the Hough transform.
+ * \return Image with the Hough transform.
+ */
 QImage HoughTransform::visualise(void) const {
   double max = 0;
   for (int r = 0; r < radius_; r++)
@@ -112,31 +132,26 @@ QImage HoughTransform::visualise(void) const {
   for (int r = 0; r < radius_; r++)
     for (int alpha = 0; alpha < angleRes_; alpha++)
       v.setPixel(alpha, r, get(r,alpha)*255/max);
-  v.save("/tmp/hough.png");
+  v.save("/tmp/hough.png"); // FIXME odstranit
   return v;
 }
 
-//   const uchar **lines = new *uchar[kernYsiz];
-//   for(int yu = 0; yu <= src->height() - kernYsiz; y++) {
-//     for(int l = 0; l < kernYsiz; l++)
-
-
-//   }
-//   validity = true;
-
-
-//}
 
 double *HoughTransform::operator[](int r) const {
   return data_ + r * angleRes_;
 }
 
 /*!
- * \brief Odhad polohy rohů tabule pomocí Houghovy transformace.
- * \param Zdrojový obrázek
- * \param Maximální velikost obrázku, z nějž se transformace počítá. (Zdrojový obrázek je přeškálován na tuto velikost.)
- * \param Úhlové rozlišení transformovaného obrázku
- * \return Odhad polohy rohů.
+ * \brief Makes a guess about the board corner positions using the Hough transform.
+ * \param Source image
+ * \param Maximum size of the image to transform. (Source image is scaled to this size.)
+ * \param Angle resolution of the transformed image
+ * \return Guessed positions of corners.
+ *
+ * Because the Hough tranform is computationally expensive (required time
+ * is proportional to angleRes * (image diameter)**3), the original image is scaled down
+ * maxSize. This has of course a consequence of lower accuracy (the border lines might
+ * be shifted).
  */
 QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &maxSize, int angleRes) {
   QImage imgscaled = src.scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -147,10 +162,21 @@ QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &max
 
 }
 
+/*!
+ * \brief Cleans up the Hought transform data.
+ */
 HoughTransform::~HoughTransform() {
   delete []data_;
 }
 
+/*!
+ * \brief Overloaded function.
+ * \param r
+ * \param alpha
+ * \param rectWidth
+ * \param rectHeight
+ * \return
+ */
 QLineF GT::houghLine(double r, double alpha, int rectWidth, int rectHeight) {
   int xo = rectWidth / 2;
   int yo = rectHeight / 2;
@@ -161,11 +187,22 @@ QLineF GT::houghLine(double r, double alpha, int rectWidth, int rectHeight) {
   return intersectLineRect(start, rect);
 }
 
+/*!
+ * \brief Transforms Hough transform coordinates to real line.
+ * \param Hough transform coordinates
+ * \param size of the original image
+ * \return a line fitted to the original image
+ */
 QLineF GT::houghLine(HoughTransform::Coords &coords, const QSize &size) {
   return GT::houghLine(coords.r, coords.alpha, size.width(), size.height());
 }
 
-// Umístí přímku do obdélníku
+/*!
+ * \brief Umístí přímku do zadaného obdélníku (jako tětivu)
+ * \param Zadaná přímka (začátek a konec QLineF nejsou brány v úvahu).
+ * \param Daný obdélník.
+ * \return QLineF začínající a končící na stranách zadaného obdélníka
+ */
 QLineF GT::intersectLineRect(const QLineF &st, const QRectF &rect) {
   QLineF start = st;
   QPointF iss[3];
@@ -188,3 +225,4 @@ QLineF GT::intersectLineRect(const QLineF &st, const QRectF &rect) {
     return QLineF(iss[0],iss[1]);
   else return QLineF();
 }
+
