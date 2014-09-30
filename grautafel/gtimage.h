@@ -93,6 +93,7 @@ namespace GT {
     QImage trimColors(QRgb minC, QRgb maxC, bool invertColors_); // Používá hodnoty zvnějšku (kvůli náhledům)
     QImage trimColors(void); // Používá uložené hodnoty
 
+
 //    QPolygon findRectangle(int diam, qreal medianThreshold); // Nejdůležitější funkce
 //    //! Locates the board using the spiral algorithm.
 //    QPolygon findRectangleSpiral(qreal relativeMedianThreshold);

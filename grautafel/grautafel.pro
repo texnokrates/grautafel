@@ -27,7 +27,8 @@ SOURCES +=\
     mainwindow.C \
     viewzoomwidget.C \
     pagedialog.C \
-    colorwidget.C
+    colorwidget.C \
+    misc.C
 
 HEADERS  += mainwindow.h \
     gtimage.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     viewzoomwidget.h \
     pagedialog.h \
     gtconvolutionkernel.h \
-    colorwidget.h
+    colorwidget.h \
+    misc.h
 
 FORMS    += mainwindow.ui
 

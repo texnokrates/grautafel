@@ -24,7 +24,7 @@ double HoughTransform::get(int r, int alpha) const {
   return data_[r * angleRes_ + alpha];
 }
 
-double HoughTransform::get(const coords c) const {
+double HoughTransform::get(const Coords c) const {
   return data_[c.r * angleRes_ +c.alpha];
 }
 
@@ -81,11 +81,11 @@ void HoughTransform::coords_by_value_init(void) {
  *
  * \return
  */
-std::vector<HoughTransform::coords> HoughTransform::roughCorners(double limitAngle) {
+std::vector<HoughTransform::Coords> HoughTransform::roughCorners(double limitAngle) {
   int limitAlpha = limitAngle * angleRes_ / (2 * pi);
-  std::vector<coords> corners(4);
+  std::vector<Coords> corners(4);
   int c = 0;
-  for(std::vector<coords>::const_iterator i = coordsByValue_.begin(); i != coordsByValue_.end(); i++) {
+  for(std::vector<Coords>::const_iterator i = coordsByValue_.begin(); i != coordsByValue_.end(); i++) {
     for(int cc = 0; cc < c; cc++)
       if (angleRes_/2 - abs(angleRes_ / 2 - abs(i->alpha - corners[cc].alpha))<= limitAlpha)
         goto next;
@@ -131,7 +131,60 @@ double *HoughTransform::operator[](int r) const {
   return data_ + r * angleRes_;
 }
 
+/*!
+ * \brief Odhad polohy rohů tabule pomocí Houghovy transformace.
+ * \param Zdrojový obrázek
+ * \param Maximální velikost obrázku, z nějž se transformace počítá. (Zdrojový obrázek je přeškálován na tuto velikost.)
+ * \param Úhlové rozlišení transformovaného obrázku
+ * \return Odhad polohy rohů.
+ */
+QVector<QPointF> HoughTransform::guessCorners(const QImage src, const QSize &maxSize, int angleRes) {
+  QImage imgscaled = src.scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  HoughTransform ht(&imgscaled, angleRes);
+  QVector<Coords> borders = QVector<Coords>::fromStdVector(ht.roughCorners());
+
+
+
+}
 
 HoughTransform::~HoughTransform() {
   delete []data_;
+}
+
+QLineF GT::houghLine(double r, double alpha, int rectWidth, int rectHeight) {
+  int xo = rectWidth / 2;
+  int yo = rectHeight / 2;
+  double y = r * sin(alpha);
+  double x = r * cos(alpha);
+  QLineF start(xo+x, yo+y, xo+x-y, yo+y+x);
+  QRectF rect(0,0,rectWidth,rectHeight);
+  return intersectLineRect(start, rect);
+}
+
+QLineF GT::houghLine(HoughTransform::Coords &coords, const QSize &size) {
+  return GT::houghLine(coords.r, coords.alpha, size.width(), size.height());
+}
+
+// Umístí přímku do obdélníku
+QLineF GT::intersectLineRect(const QLineF &st, const QRectF &rect) {
+  QLineF start = st;
+  QPointF iss[3];
+  int i = 0;
+  // Půlnoční velkorysý odhad:
+  double longEnough = fabs(rect.bottom()) + fabs(rect.top()) + fabs(rect.left()) + fabs(rect.right()) + fabs(start.x1()) + fabs(start.x2()) + fabs(start.y1()) + fabs(start.y2());
+  start.setLength(longEnough);
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.bottomLeft(),rect.bottomRight()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.bottomLeft(),rect.topLeft()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.topRight(),rect.bottomRight()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.topRight(),rect.topLeft()), iss + i)) i++;
+
+  start.setLength(-longEnough);
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.bottomLeft(),rect.bottomRight()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.bottomLeft(),rect.topLeft()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.topRight(),rect.bottomRight()), iss + i)) i++;
+  if (QLineF::BoundedIntersection == start.intersect(QLineF(rect.topRight(),rect.topLeft()), iss + i)) i++;
+
+  if (2 == i)
+    return QLineF(iss[0],iss[1]);
+  else return QLineF();
 }

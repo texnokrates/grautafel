@@ -2,23 +2,25 @@
 #define GTHOUGHTRANSFORM_H
 // FIXME QObject je to proč?
 
-//#include <QObject>
 #include <vector>
+#include <QVector>
+#include <QPointF>
+#include <QLineF>
+#include <QRectF>
+#include <QSize>
 #include <list>
 class QImage;
 
 namespace GT {
   class HoughTransform
-    //: public QObject
   {
-//  Q_OBJECT
   public:
-    struct coords {
+    struct Coords {
       int r;
       int alpha;
     };
 
-    coords coordsByValue(int n) {
+    Coords coordsByValue(int n) {
       return coordsByValue_[n];
     }
     HoughTransform(const QImage *src, int angleResolution, int margin = 2);//, QObject *parent = 0);
@@ -33,23 +35,27 @@ namespace GT {
       return originalWidth_;
     }
     double get(int r, int alpha) const;
-    double get(const coords c) const;
+    double get(const Coords c) const;
     int radius(void) const {
       return radius_;
     }
     double *operator[](int r) const;
     QImage visualise(void) const;
-    std::vector<coords> roughCorners(double limitAngle = 0.55);
+    std::vector<Coords> roughCorners(double limitAngle = 0.55);
+
+    static QVector<QPointF> guessCorners(const QImage img,
+                                         const QSize &maxSize = QSize(480, 320),
+                                         int angleRes = 360);
 
 
   private:
-    std::vector<coords> coordsByValue_;
+    std::vector<Coords> coordsByValue_;
     struct cmpstruct { // Řadíme sestupně
       HoughTransform *m;
       cmpstruct(HoughTransform *p) {
         m = p;
       }
-      bool operator()(const coords &a, const coords &b) {
+      bool operator()(const Coords &a, const Coords &b) {
         return m->get(a) > m->get(b);
       }
     };
@@ -65,5 +71,9 @@ namespace GT {
     void coords_by_value_init(void);
 
   };
+
+  QLineF houghLine(double r, double alpha, int rectWidth, int rectHeight);
+  QLineF houghLine(HoughTransform::Coords &coords, const QSize &size);
+  QLineF intersectLineRect(const QLineF &start, const QRectF &rect);
 }
 #endif // GTHOUGHTRANSFORM_H
